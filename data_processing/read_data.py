@@ -18,6 +18,19 @@ def read_file(path: str) -> tuple:
     output_edi.pop(0)
     output_pes.pop(0)
 
+    #Sometimes the data read Nones at the end,
+    #there should be no Nones in the middle
+ 
+    for i in range(len(output_edi)):
+        if output_edi[i] == None:
+            output_edi = output_edi[:i]
+            break
+
+    for i in range(len(output_pes)):
+        if output_pes[i] == None:
+            output_pes = output_pes[:i]
+            break
+
     return (output_edi, output_pes)
 
 
