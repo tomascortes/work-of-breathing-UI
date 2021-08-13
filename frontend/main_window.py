@@ -1,5 +1,5 @@
 from frontend.file_selector import Menu
-from frontend.analizer import Analiser
+from frontend.analiser import Analiser
 from data_processing.read_data import read_file
 
 class MainWindow:

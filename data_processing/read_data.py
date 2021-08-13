@@ -19,9 +19,6 @@ def read_file(path: str) -> list:
 
     return (output_edi, output_pes)
 
-
-
-
 if __name__ == "__main__":
     print("Executing read_data")
     read_file( "./data/01_ PVE 1_Importacion de datos filtrados_con graficos.xlsm")
