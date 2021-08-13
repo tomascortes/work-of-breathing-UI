@@ -1,6 +1,6 @@
 from openpyxl import Workbook, load_workbook
 
-def read_file(path: str) -> list:
+def read_file(path: str) -> tuple:
     """recives a path of a excel file and return a tuple of two lists, 
     corresponding to Edi (uV) and Pes"""
     wb = Workbook()
