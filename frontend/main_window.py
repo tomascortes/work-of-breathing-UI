@@ -2,6 +2,7 @@ from frontend.file_selector import Menu
 from frontend.analiser import Analiser
 from data_processing.read_data import read_file
 
+
 class MainWindow:
     def __init__(self):
         self.menu = Menu()

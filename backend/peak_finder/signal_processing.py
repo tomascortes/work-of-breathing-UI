@@ -8,7 +8,7 @@ from scipy.signal import find_peaks
 from data_processing.read_data import read_file
 
 
-def get_signal_peaks(data, first_dp, last_dp, min_max, max_min, dist = 150) -> tuple:
+def get_signal_peaks(data, first_dp, last_dp, min_max, max_min, dist=150) -> tuple:
     """recives a list with a signal, and tries to find its inflection point,
     returning it as a tuple (xpos,ypos). Not finished
     """
@@ -19,19 +19,19 @@ def get_signal_peaks(data, first_dp, last_dp, min_max, max_min, dist = 150) -> t
     # Signal "energy"
     # yss = np.square(ys)
 
-    #inverted signal
+    # inverted signal
     ysi = -1*ys
 
     # smooth out noise
     # smoothed = gaussian_filter(ys, 3.)
 
-    #inverted smoothed signal
+    # inverted smoothed signal
     # smoothedi = -1*smoothed
 
     # positions for positive peaks (local maxima)
-    peaks, _ = find_peaks(ys, height = min_max, distance = dist)
+    peaks, _ = find_peaks(ys, height=min_max, distance=dist)
     # positions for negative peaks (local minima)
-    antipeaks, _ = find_peaks(ysi, height = (max_min, 0), distance = dist)
+    antipeaks, _ = find_peaks(ysi, height=(max_min, 0), distance=dist)
 
     # positions for positive peaks (local maxima)
     # peaks, _ = find_peaks(smoothed, height = min_max, distance = dist)

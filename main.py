@@ -8,6 +8,3 @@ if __name__ == "__main__":
     app = QApplication([])
     m = MainWindow()
     sys.exit(app.exec_())
-    
-
-    
