@@ -5,8 +5,11 @@ import os
 
 
 window_name, base_class = uic.loadUiType("frontend/ui_files/menu.ui")
+
+
 class Menu(window_name, base_class):
     trigger = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -14,7 +17,7 @@ class Menu(window_name, base_class):
         self.push_button_ready.clicked.connect(self.continue_to_processing)
         self.push_button_file_selector.clicked.connect(self.path_file_selector)
 
-        #Variables auxiliares de la ventana
+        # Variables auxiliares de la ventana
         self._excel_path = ""
 
     @property
