@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from scipy.signal import find_peaks
-from data_processing.read_data import read_file
+from data_reading.read_data import read_file
 
 
-def get_signal_peaks(data, first_dp, last_dp, min_max, max_min, dist=150) -> tuple:
+def get_signal_peaks(data, min_max, max_min, first_dp=0, last_dp=None, dist=150) -> tuple:
     """recives a list with a signal, and tries to find its inflection point,
     returning it as a tuple (xpos,ypos). Not finished
     """
-
+    if not last_dp:
+        last_dp = len(data)
     # xs corresponds to x coordinates and ys to the signal values
     xs, ys = np.arange(last_dp-first_dp), np.array(data[first_dp:last_dp])
 
