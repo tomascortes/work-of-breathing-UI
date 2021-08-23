@@ -6,7 +6,7 @@ def create_excel(integral_values, output_path="") -> tuple:
     """recives a list of lists with shape:
     [integral_value, start_integral, end_integral]
     and returns and creates an excel file with the data in the
-    output path"""
+    output path. Creates output directory if it doesn't exist."""
 
     # Create workbook
     wb = Workbook(write_only=True)
