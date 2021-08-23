@@ -1,16 +1,10 @@
-from backend.peak_finder.signal_processing import get_signal_peaks
+from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
 
 class Integration:
-    def __init__(self, data_edi, data_pes, 
-            lower_max_edi, higer_min_edi, 
-            lower_max_pes, higer_min_pes):
+    def __init__(self, data_edi, data_pes):
 
         self.data_edi = data_edi
         self.data_pes = data_pes
-        self.lower_max_edi = lower_max_edi
-        self.higer_min_edi = higer_min_edi
-        self.lower_max_pes = lower_max_pes
-        self.higer_min_pes = higer_min_pes
     
     def points_70_percent(self) -> list:
         '''
@@ -19,11 +13,10 @@ class Integration:
         of the amplitude
         '''
         indexes_70 = []
-        peaks, antipeaks = get_signal_peaks(
-            self.data_edi, self.lower_max_edi, self.higer_min_edi)
+        peaks, antipeaks = get_edi_peaks(self.data_edi)
         peak_index = 0
 
-        #the star of the cicle is antipeak
+        #the start of the cicle is antipeak
         while self.data_edi[peaks[peak_index]] < self.data_edi[antipeaks[0]]:
             peak_index += 1
 
@@ -48,8 +41,7 @@ class Integration:
         integral_values = []
         dx = 100
 
-        index_peaks_pes, _ = get_signal_peaks(
-            self.data_pes, self.lower_max_pes, self.higer_min_pes)
+        index_peaks_pes = get_pes_peaks(self.data_pes)
         index_70 = self.points_70_percent()
 
         for start_pointer in range(len(index_peaks_pes) - 1):

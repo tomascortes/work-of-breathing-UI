@@ -22,31 +22,31 @@ def init_ui(self):
     # Lower max value related
     # ++++++++++++++++++++++++++
     # Items
-    self.label_first_text1 = QLabel('Valor minimo de los maximos:', self)
-    self.lower_max_input1 = QLineEdit(self)
-    self.label_actual_lower_max1 = QLabel(str(self.integ.lower_max_edi), self)
+    # self.label_first_text1 = QLabel('Valor minimo de los maximos:', self)
+    # self.lower_max_input1 = QLineEdit(self)
+    # self.label_actual_lower_max1 = QLabel(str(self.integ.lower_max_edi), self)
 
     #Placement in layout
-    hlay_first.addWidget(self.label_first_text1)
-    hlay_first.addWidget(self.lower_max_input1)
-    hlay_first.addWidget(self.label_actual_lower_max1)
-    hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # hlay_first.addWidget(self.label_first_text1)
+    # hlay_first.addWidget(self.lower_max_input1)
+    # hlay_first.addWidget(self.label_actual_lower_max1)
+    # hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    vlay.addLayout(hlay_first)
+    # vlay.addLayout(hlay_first)
 
     # Higer max related
     # ++++++++++++++++++++++++++
 
-    self.label_first_text2 = QLabel('Valor maximo de los minimos:', self)
-    self.higher_min_input1 = QLineEdit(self)
-    self.label_actual_higer_min1 = QLabel(str(-self.integ.higer_min_edi), self)
+    # self.label_first_text2 = QLabel('Valor maximo de los minimos:', self)
+    # self.higher_min_input1 = QLineEdit(self)
+    # self.label_actual_higer_min1 = QLabel(str(-self.integ.higer_min_edi), self)
 
     #Placement in layout
-    hlay_first2 = QHBoxLayout()
-    hlay_first2.addWidget(self.label_first_text2)
-    hlay_first2.addWidget(self.higher_min_input1)
-    hlay_first2.addWidget(self.label_actual_higer_min1)
-    hlay_first2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # hlay_first2 = QHBoxLayout()
+    # hlay_first2.addWidget(self.label_first_text2)
+    # hlay_first2.addWidget(self.higher_min_input1)
+    # hlay_first2.addWidget(self.label_actual_higer_min1)
+    # hlay_first2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     # Button corresponding to first graph
     pybutton_1 = QPushButton('Calcular', self)
@@ -55,7 +55,7 @@ def init_ui(self):
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
     first_super_vlay2 = QVBoxLayout()
 
-    first_super_vlay2.addLayout(hlay_first2)
+    # first_super_vlay2.addLayout(hlay_first2)
     first_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(first_super_vlay2)
 
@@ -71,30 +71,30 @@ def init_ui(self):
     # ++++++++++++++++++++++++++
 
     # Items
-    self.label_second_text1 = QLabel('Valor minimo de los maximos:', self)
-    self.lower_max_input2 = QLineEdit(self)
-    self.label_actual_lower_max2 = QLabel(str(self.integ.lower_max_pes), self)
+    # self.label_second_text1 = QLabel('Valor minimo de los maximos:', self)
+    # self.lower_max_input2 = QLineEdit(self)
+    # self.label_actual_lower_max2 = QLabel(str(self.integ.lower_max_pes), self)
 
     #Placement in layout
-    hlay_second.addWidget(self.label_second_text1)
-    hlay_second.addWidget(self.lower_max_input2)
-    hlay_second.addWidget(self.label_actual_lower_max2)
-    hlay_second.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # hlay_second.addWidget(self.label_second_text1)
+    # hlay_second.addWidget(self.lower_max_input2)
+    # hlay_second.addWidget(self.label_actual_lower_max2)
+    # hlay_second.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    vlay.addLayout(hlay_second)
+    # vlay.addLayout(hlay_second)
 
     # Higer max related
     # ++++++++++++++++++++++++++
-    self.label_second_text2 = QLabel('Valor maximo de los minimos:', self)
-    self.higher_min_input2 = QLineEdit(self)
-    self.label_actual_higher_min2 = QLabel(str(-self.integ.higer_min_pes), self)
+    # self.label_second_text2 = QLabel('Valor maximo de los minimos:', self)
+    # self.higher_min_input2 = QLineEdit(self)
+    # self.label_actual_higher_min2 = QLabel(str(-self.integ.higer_min_pes), self)
 
     #Placement in layout
-    hlay_second2 = QHBoxLayout()
-    hlay_second2.addWidget(self.label_second_text2)
-    hlay_second2.addWidget(self.higher_min_input2)
-    hlay_second2.addWidget(self.label_actual_higher_min2)
-    hlay_second2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # hlay_second2 = QHBoxLayout()
+    # hlay_second2.addWidget(self.label_second_text2)
+    # hlay_second2.addWidget(self.higher_min_input2)
+    # hlay_second2.addWidget(self.label_actual_higher_min2)
+    # hlay_second2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     # Button corresponding to second graph
     pybutton_2 = QPushButton('Calcular', self)
@@ -103,7 +103,7 @@ def init_ui(self):
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
     second_super_vlay2 = QVBoxLayout()
 
-    second_super_vlay2.addLayout(hlay_second2)
+    # second_super_vlay2.addLayout(hlay_second2)
     second_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(second_super_vlay2)
 

@@ -4,7 +4,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import random
 
-from backend.peak_finder.signal_processing import get_signal_peaks
+from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
 from backend.integration.integral import Integration
 from frontend.analiser.layout import init_ui
 
@@ -23,7 +23,7 @@ class Analiser(QMainWindow):
         # Utility variables
         self.data_edi = data_edi
         self.data_pes = data_pes
-        self.integ = Integration(data_edi, data_pes,  1.8, -1, 10, -10)
+        self.integ = Integration(data_edi, data_pes)
 
         # Add plot 1 to layout
         self.plot_edi = WidgetPlot(self, data=self.data_edi)
@@ -35,42 +35,42 @@ class Analiser(QMainWindow):
         self.showMaximized()
 
     def edi_button_clicked(self):
-        if self.higher_min_input1.text() != "":
-            try:
-                self.integ.higer_min_edi = -float(self.higher_min_input1.text())
-                self.label_actual_higer_min1.setText(str(-self.integ.higer_min_edi))
-            except:
-                pass
+        # if self.higher_min_input1.text() != "":
+        #     try:
+        #         self.integ.higer_min_edi = -float(self.higher_min_input1.text())
+        #         self.label_actual_higer_min1.setText(str(-self.integ.higer_min_edi))
+        #     except:
+        #         pass
 
-        if self.lower_max_input1.text() != "":
-            try:
-                self.integ.lower_max_edi = float(self.lower_max_input1.text())
-                self.label_actual_lower_max1.setText(str(self.integ.lower_max_edi))
-            except:
-                pass
+        # if self.lower_max_input1.text() != "":
+        #     try:
+        #         self.integ.lower_max_edi = float(self.lower_max_input1.text())
+        #         self.label_actual_lower_max1.setText(str(self.integ.lower_max_edi))
+        #     except:
+        #         pass
 
-        self.plot_edi.plot_peaks(self.integ.lower_max_edi, self.integ.higer_min_edi)
+        self.plot_edi.plot_edi_peaks()
         self.plot_edi.canvas.plot_70_points(self.integ.points_70_percent())
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
 
-        if self.higher_min_input2.text() != "":
-            try:
-                self.integ.higer_min_pes = -float(self.higher_min_input2.text())
-                self.label_actual_higher_min2.setText(str(-self.integ.higer_min_pes))
-            except:
-                pass
+        # if self.higher_min_input2.text() != "":
+            # try:
+                # self.integ.higer_min_pes = -float(self.higher_min_input2.text())
+                # self.label_actual_higher_min2.setText(str(-self.integ.higer_min_pes))
+            # except:
+                # pass
 
-        if self.lower_max_input2.text() != "":
-            try:
-                self.integ.lower_max_pes = float(self.lower_max_input2.text())
-                self.label_actual_lower_max2.setText(str(self.integ.lower_max_pes))
-            except:
-                pass
+        # if self.lower_max_input2.text() != "":
+            # try:
+            #     self.integ.lower_max_pes = float(self.lower_max_input2.text())
+            #     self.label_actual_lower_max2.setText(str(self.integ.lower_max_pes))
+            # except:
+            #     pass
 
         self.plot_pes.canvas.clean()
-        self.plot_pes.plot_peaks(self.integ.lower_max_pes, self.integ.higer_min_pes)
+        self.plot_pes.plot_pes_peaks()
         self.plot_pes.canvas.plot_70_points(self.integ.points_70_percent())
         self.plot_pes.canvas.plot_integration(self.integ.integration())
         self.plot_pes.canvas.draw()
@@ -91,13 +91,19 @@ class WidgetPlot(QWidget):
         self.layout().addWidget(self.canvas)
         print(args)
 
-    def plot_peaks(self, lower_max, higer_min):
+    def plot_edi_peaks(self):
         '''
-        Plot the peaks of the curve stored
+        Plot the peaks of the edi curve stored
         '''
-        peaks, antipeaks = get_signal_peaks(
-            self.data, lower_max, higer_min)
-        self.canvas.peaks_update(peaks, antipeaks)
+        peaks, antipeaks = get_edi_peaks(self.data)
+        self.canvas.edi_peaks_update(peaks, antipeaks)
+
+    def plot_pes_peaks(self):
+        '''
+        Plot the peaks of the pes curve stored
+        '''
+        peaks = get_pes_peaks(self.data)
+        self.canvas.pes_peaks_update(peaks)
 
 
 
@@ -122,18 +128,22 @@ class PlotCanvas(FigureCanvas):
         else:
             self.ax = self.figure.add_subplot(111)
         self.ax.plot(self.data, 'r-', linewidth=0.5)
-        self.ax.set_title('PyQt Matplotlib Example')
+        self.ax.set_title('Edi Signal')
         self.draw()
 
     def clean(self):
         self.ax.clear()
 
-    def peaks_update(self, peaks, antipeaks):
+    def edi_peaks_update(self, peaks, antipeaks):
         self.ax.plot(self.data, 'r-', linewidth=0.5)
         self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
         self.ax.plot(antipeaks, [self.data[x_a_peak]
                      for x_a_peak in antipeaks], 'b+')
-        
+
+    def pes_peaks_update(self, peaks):
+        self.ax.plot(self.data, 'r-', linewidth=0.5)
+        self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
+
 
     def plot_70_points(self, ind_70):
         '''
