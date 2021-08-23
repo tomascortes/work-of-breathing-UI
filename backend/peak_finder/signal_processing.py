@@ -8,49 +8,64 @@ from scipy.signal import find_peaks
 from data_reading.read_data import read_file
 
 
-def get_signal_peaks(data, min_max, max_min, first_dp=0, last_dp=None, dist=150) -> tuple:
-    """recives a list with a signal, and tries to find its inflection point,
-    returning it as a tuple (xpos,ypos). Not finished
+# def get_signal_peaks(data, min_max, max_min, first_dp=0, last_dp=None, dist=150) -> tuple:
+#     """recives a list with a signal, and tries to find its peaks and valleys (antipeaks),
+#     returning it as a tuple o the arrays of positions of the peaks in the data.
+#     """
+#     if not last_dp:
+#         last_dp = len(data)
+#     # xs corresponds to x coordinates and ys to the signal values
+#     xs, ys = np.arange(last_dp-first_dp), np.array(data[first_dp:last_dp])
+
+#     # Signal "energy"
+#     # yss = np.square(ys)
+
+#     # smooth out noise
+#     # smoothed = gaussian_filter(ys, 3.)
+
+#     # peak limits obtained from smoothed signal
+#     # peak_lims = gaussian_filter(ys, 300)
+
+#     # positions for positive peaks (local maxima)
+#     peaks, _ = find_peaks(ys, height=(min_max, np.amax(ys)), distance=dist)
+#     # positions for negative peaks (local minima)
+#     antipeaks, _ = find_peaks(-ys, height=(-max_min, np.amax(-ys)), distance=dist)
+
+#     return (peaks, antipeaks)
+
+def get_edi_peaks(data, smoothing_sigma = 300, dist_from_pl = 0, dist = 70, prom = 1) -> tuple:
+    """receives a list with a edi signal, and tries to find its peaks and valleys (antipeaks),
+    returning it as a tuple of the arrays of positions of the peaks in the data.
+    smoothing_sigma: The function calculates all peaks over and antipeaks under a filtered
+    version of the signal (with sigma smoothing_signal) plus dist_from_pl.
+    dist: minimum distance between peaks
+    prom: minimum prominence (vertical distance between the peak and its lowest contour line)
+    of peaks
     """
-    if not last_dp:
-        last_dp = len(data)
     # xs corresponds to x coordinates and ys to the signal values
-    xs, ys = np.arange(last_dp-first_dp), np.array(data[first_dp:last_dp])
-
-    # Signal "energy"
-    # yss = np.square(ys)
-
-    # smooth out noise
-    # smoothed = gaussian_filter(ys, 3.)
-
-    # peak limits obrained from smoothed  signal
-    # peak_lims = gaussian_filter(ys, 300)
-
-    # positions for positive peaks (local maxima)
-    peaks, _ = find_peaks(ys, height=(min_max, np.amax(ys)), distance=dist)
-    # positions for negative peaks (local minima)
-    antipeaks, _ = find_peaks(-ys, height=(-max_min, np.amax(-ys)), distance=dist)
-
-    # positions for positive peaks (local maxima)
-    # peaks, _ = find_peaks(smoothed, height = min_max, distance = dist)
-    # positions for negative peaks (local minima)
-    # antipeaks, _ = find_peaks(smoothedi, height = (max_min, 0), distance = dist)
-    return (peaks, antipeaks)
-
-
-def get_pes_peaks(data, peak_lim_thickness = 0, smoothing_sigma = 300):
-    """recives a list with a pes signal, and tries to find the local peaks just
-    before the the cycles starts decending to its valley.
-    Returns numpy array of x positions.
-    """
-    # xs corresponds to x coordinates and ys to the signal values
-    xs, ys = np.arange(len(data)), np.array(data)
+    ys = np.array(data)
     # peak limits obtained from smoothed signal
     peak_lims = gaussian_filter(ys, smoothing_sigma)
     # positions for positive peaks (local maxima)
-    peaks, _ = find_peaks(ys, height=(peak_lims + peak_lim_thickness, np.amax(ys)))
+    peaks, _ = find_peaks(ys, height=(peak_lims + dist_from_pl, np.amax(ys)), distance=dist,prominence = prom)
     # positions for negative peaks (local minima)
-    # antipeaks, _ = find_peaks(-ys, height=(-peak_lims - peak_lim_thickness, np.amax(-ys)), distance=dist)
+    antipeaks, _ = find_peaks(-ys, height=(-peak_lims + dist_from_pl, np.amax(-ys)), distance=dist,prominence = prom)
+
+    return (peaks, antipeaks)
+
+def get_pes_peaks(data, smoothing_sigma = 300, dist_from_pl = 0, dist = 1, prom = 0.07) -> list:
+    """receives a list with a pes signal, and tries to find the local peaks just
+    before the the cycles starts decending to its valley.
+    Returns numpy array of x-axis positions of peaks in signal.
+    """
+    # xs corresponds to x coordinates and ys to the signal values
+    ys = np.array(data)
+    # peak limits obtained from smoothed signal
+    peak_lims = gaussian_filter(ys, smoothing_sigma)
+    # positions for positive peaks (local maxima)
+    peaks, _ = find_peaks(ys, height=(peak_lims + dist_from_pl, np.amax(ys)), distance=dist,prominence = prom)
+    # positions for negative peaks (local minima)
+    # antipeaks, _ = find_peaks(-ys, height=(-peak_lims + dist_from_pl, np.amax(-ys)))
     # Positive when signal in mount, negative in valley:
     mount_or_valley = np.sign(ys - peak_lims)
     # Positions where curve ys crosses curve peak_lims
