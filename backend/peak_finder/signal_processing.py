@@ -37,7 +37,7 @@ def get_edi_peaks(data, smoothing_sigma = 300, dist_from_pl = 0, dist = 70, prom
     """receives a list with a edi signal, and tries to find its peaks and valleys (antipeaks),
     returning it as a tuple of the arrays of positions of the peaks in the data.
     smoothing_sigma: The function calculates all peaks over and antipeaks under a filtered
-    version of the signal (with sigma smoothing_signal) plus dist_from_pl.
+    version of the signal (with sigma smoothing_sigma) plus dist_from_pl.
     dist: minimum distance between peaks
     prom: minimum prominence (vertical distance between the peak and its lowest contour line)
     of peaks
@@ -53,28 +53,36 @@ def get_edi_peaks(data, smoothing_sigma = 300, dist_from_pl = 0, dist = 70, prom
 
     return (peaks, antipeaks)
 
-def get_pes_peaks(data, smoothing_sigma = 300, dist_from_pl = 0, dist = 1, prom = 0.07) -> list:
+def get_pes_peaks(data, big_sigma = 300, small_sigma = 25, dist_from_pl = 0, dist = 1, prom = 0.07) -> list:
     """receives a list with a pes signal, and tries to find the local peaks just
     before the the cycles starts decending to its valley.
     Returns numpy array of x-axis positions of peaks in signal.
+    big_sigma and small_sigma: The function returns the first peaks before each inflection point
+    of the signal, wich are aproximated as the intersection of a smoothed version of the origianl
+    signal with sigma big_sigma and other version smoothed with small_sigma.
+    dist_from_pl: will not return any peaks under smoothed signal with big_sigma + dist_from_pl.
+    dist: minimum distance between peaks
+    prom: minimum prominence (vertical distance between the peak and its lowest contour line) of peaks
     """
     # xs corresponds to x coordinates and ys to the signal values
     ys = np.array(data)
-    # peak limits obtained from smoothed signal
-    peak_lims = gaussian_filter(ys, smoothing_sigma)
+    # signal smoothed with big_sigma
+    very_smoothed_sgnl = gaussian_filter(ys, big_sigma)
+    # signal smoothed with small_sigma
+    less_smoothed_sgnl = gaussian_filter(ys, small_sigma)
     # positions for positive peaks (local maxima)
-    peaks, _ = find_peaks(ys, height=(peak_lims + dist_from_pl, np.amax(ys)), distance=dist,prominence = prom)
+    peaks, _ = find_peaks(ys, height=(very_smoothed_sgnl + dist_from_pl, np.amax(ys)), distance=dist,prominence = prom)
     # positions for negative peaks (local minima)
-    # antipeaks, _ = find_peaks(-ys, height=(-peak_lims + dist_from_pl, np.amax(-ys)))
+    # antipeaks, _ = find_peaks(-ys, height=(-very_smoothed_sgnl + dist_from_pl, np.amax(-ys)))
     # Positive when signal in mount, negative in valley:
-    mount_or_valley = np.sign(ys - peak_lims)
-    # Positions where curve ys crosses curve peak_lims
-    curve_crossings = np.where(np.diff(mount_or_valley))[0]
+    mount_or_valley = np.sign(less_smoothed_sgnl - very_smoothed_sgnl)
+    # Positions where curve less_smoothed_signl crosses curve very_smoothed_sgnl
+    inflection_points = np.where(np.diff(mount_or_valley))[0]
     # Whe get the positions of only the valley crossings
     if mount_or_valley[0] > 0:
-        valley_crossings = curve_crossings[::2]
+        valley_crossings = inflection_points[::2]
     else:
-        valley_crossings = curve_crossings[1::2]
+        valley_crossings = inflection_points[1::2]
 
     cnt = 0
     pes_peaks = []
