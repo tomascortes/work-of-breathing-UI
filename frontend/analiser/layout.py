@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpacerItem, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpacerItem, QSizePolicy, QPushButton, QCheckBox
+
 
 def init_ui(self):
     '''
@@ -22,14 +23,14 @@ def init_ui(self):
     # Lower max value related
     # ++++++++++++++++++++++++++
     # Items
-    # self.label_first_text1 = QLabel('Valor minimo de los maximos:', self)
-    # self.lower_max_input1 = QLineEdit(self)
-    # self.label_actual_lower_max1 = QLabel(str(self.integ.lower_max_edi), self)
+    # self.label_first_text1 = QLabel('Suavizado pequeño:', self)
+    # self.small_sigma_input1 = QLineEdit(self)
+    # self.label_actual_small_sigma1 = QLabel(str(self.integ.small_sigma_edi), self)
 
-    #Placement in layout
+    # # Placement in layout
     # hlay_first.addWidget(self.label_first_text1)
-    # hlay_first.addWidget(self.lower_max_input1)
-    # hlay_first.addWidget(self.label_actual_lower_max1)
+    # hlay_first.addWidget(self.small_sigma_input1)
+    # hlay_first.addWidget(self.label_actual_small_sigma1)
     # hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     # vlay.addLayout(hlay_first)
@@ -37,16 +38,16 @@ def init_ui(self):
     # Higer max related
     # ++++++++++++++++++++++++++
 
-    # self.label_first_text2 = QLabel('Valor maximo de los minimos:', self)
-    # self.higher_min_input1 = QLineEdit(self)
-    # self.label_actual_higer_min1 = QLabel(str(-self.integ.higer_min_edi), self)
+    self.label_first_text2 = QLabel('Suavizado grande:', self)
+    self.big_sigma_input1 = QLineEdit(self)
+    self.lable_actual_big_sigma1 = QLabel(str(self.integ.big_sigma_edi), self)
 
-    #Placement in layout
-    # hlay_first2 = QHBoxLayout()
-    # hlay_first2.addWidget(self.label_first_text2)
-    # hlay_first2.addWidget(self.higher_min_input1)
-    # hlay_first2.addWidget(self.label_actual_higer_min1)
-    # hlay_first2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # Placement in layout
+    hlay_first2 = QHBoxLayout()
+    hlay_first2.addWidget(self.label_first_text2)
+    hlay_first2.addWidget(self.big_sigma_input1)
+    hlay_first2.addWidget(self.lable_actual_big_sigma1)
+    hlay_first2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     # Button corresponding to first graph
     pybutton_1 = QPushButton('Calcular', self)
@@ -55,7 +56,11 @@ def init_ui(self):
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
     first_super_vlay2 = QVBoxLayout()
 
-    # first_super_vlay2.addLayout(hlay_first2)
+    # Checkbox
+    self.check_box_smooth_1 = QCheckBox("Mostrar curva de suavizado.")
+
+    first_super_vlay2.addLayout(hlay_first2)
+    first_super_vlay2.addWidget(self.check_box_smooth_1)
     first_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(first_super_vlay2)
 
@@ -71,30 +76,31 @@ def init_ui(self):
     # ++++++++++++++++++++++++++
 
     # Items
-    # self.label_second_text1 = QLabel('Valor minimo de los maximos:', self)
-    # self.lower_max_input2 = QLineEdit(self)
-    # self.label_actual_lower_max2 = QLabel(str(self.integ.lower_max_pes), self)
+    self.label_second_text1 = QLabel('Suavizado pequeño:', self)
+    self.small_sigma_input2 = QLineEdit(self)
+    self.label_actual_small_sigma2 = QLabel(
+        str(self.integ.small_sigma_pes), self)
 
     #Placement in layout
-    # hlay_second.addWidget(self.label_second_text1)
-    # hlay_second.addWidget(self.lower_max_input2)
-    # hlay_second.addWidget(self.label_actual_lower_max2)
-    # hlay_second.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    hlay_second.addWidget(self.label_second_text1)
+    hlay_second.addWidget(self.small_sigma_input2)
+    hlay_second.addWidget(self.label_actual_small_sigma2)
+    hlay_second.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    # vlay.addLayout(hlay_second)
+    vlay.addLayout(hlay_second)
 
     # Higer max related
     # ++++++++++++++++++++++++++
-    # self.label_second_text2 = QLabel('Valor maximo de los minimos:', self)
-    # self.higher_min_input2 = QLineEdit(self)
-    # self.label_actual_higher_min2 = QLabel(str(-self.integ.higer_min_pes), self)
+    self.label_second_text2 = QLabel('Suavizado grande:', self)
+    self.big_sigma_input2 = QLineEdit(self)
+    self.label_actual_big_sigma2 = QLabel(str(self.integ.big_sigma_pes), self)
 
     #Placement in layout
-    # hlay_second2 = QHBoxLayout()
-    # hlay_second2.addWidget(self.label_second_text2)
-    # hlay_second2.addWidget(self.higher_min_input2)
-    # hlay_second2.addWidget(self.label_actual_higher_min2)
-    # hlay_second2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    hlay_second2 = QHBoxLayout()
+    hlay_second2.addWidget(self.label_second_text2)
+    hlay_second2.addWidget(self.big_sigma_input2)
+    hlay_second2.addWidget(self.label_actual_big_sigma2)
+    hlay_second2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     # Button corresponding to second graph
     pybutton_2 = QPushButton('Calcular', self)
@@ -103,7 +109,10 @@ def init_ui(self):
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
     second_super_vlay2 = QVBoxLayout()
 
-    # second_super_vlay2.addLayout(hlay_second2)
+    self.check_box_smooth_2 = QCheckBox("Mostrar curvas de suavizado.")
+
+    second_super_vlay2.addLayout(hlay_second2)
+    second_super_vlay2.addWidget(self.check_box_smooth_2)
     second_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(second_super_vlay2)
 
@@ -117,9 +126,9 @@ def init_ui(self):
 
     vlay.addLayout(aux_layer)
 
-    
-
     # Buttons conections
     pybutton_1.clicked.connect(self.edi_button_clicked)
     pybutton_2.clicked.connect(self.pes_button_clicked)
     export_button.clicked.connect(self.export_data)
+    self.check_box_smooth_1.stateChanged.connect(self.edi_button_clicked)
+    self.check_box_smooth_2.stateChanged.connect(self.pes_button_clicked)

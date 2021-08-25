@@ -18,9 +18,9 @@ def read_file(path: str) -> tuple:
     output_edi.pop(0)
     output_pes.pop(0)
 
-    #Sometimes the data read Nones at the end,
-    #there should be no Nones in the middle
- 
+    # Sometimes the data read Nones at the end,
+    # there should be no Nones in the middle
+
     for i in range(len(output_edi)):
         if output_edi[i] == None:
             output_edi = output_edi[:i]
@@ -35,5 +35,5 @@ def read_file(path: str) -> tuple:
 
 
 if __name__ == "__main__":
-    print("Executing read_data")
+    print("Executing data_manage")
     read_file("./data/01_ PVE 1_Importacion de datos filtrados_con graficos.xlsm")

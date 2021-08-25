@@ -1,6 +1,6 @@
 from frontend.file_selector import Menu
 from frontend.analiser.analiser import Analiser
-from data_reading.read_data import read_file
+from data_manage.read_data import read_file
 
 
 class MainWindow:
