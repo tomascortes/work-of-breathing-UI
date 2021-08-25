@@ -1,6 +1,7 @@
 from openpyxl import Workbook, load_workbook
-import datetime;
+import datetime
 from pathlib import Path
+
 
 def create_excel(integral_values, output_path="") -> tuple:
     """recives a list of lists with shape:
@@ -28,8 +29,3 @@ def create_excel(integral_values, output_path="") -> tuple:
     Path(output_dir_path).mkdir(parents=True, exist_ok=True)
     # Save excel file
     wb.save(output_dir_path + "/" + file_name)
-
-
-if __name__ == "__main__":
-    print("Executing read_data")
-    read_file("./data/01_ PVE 1_Importacion de datos filtrados_con graficos.xlsm")

@@ -1,12 +1,12 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpacerItem, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QSizePolicy, QPushButton
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import random
+from PyQt5 import QtCore
 
 from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
 from backend.integration.integral import Integration
-from create_output.output_data import create_excel
+from data_manage.output_data import create_excel
 from frontend.analiser.layout import init_ui
 
 
@@ -29,52 +29,74 @@ class Analiser(QMainWindow):
 
         # Add plot 1 to layout
         self.plot_edi = WidgetPlot(self, data=self.data_edi)
-         # Add plot 2 to layout
+        # Add plot 2 to layout
         self.plot_pes = WidgetPlot(
             self, data=self.data_pes, shared_ax=self.plot_edi.canvas.ax)
 
-        init_ui(self)        
+        init_ui(self)
         self.showMaximized()
 
     def edi_button_clicked(self):
-        # if self.higher_min_input1.text() != "":
+        if self.big_sigma_input1.text() != "":
+            try:
+                self.integ.big_sigma_edi = float(self.big_sigma_input1.text())
+                self.lable_actual_big_sigma1.setText(
+                    str(self.integ.big_sigma_edi))
+            except:
+                pass
+
+        # if self.small_sigma_edit1.text() != "":
         #     try:
-        #         self.integ.higer_min_edi = -float(self.higher_min_input1.text())
-        #         self.label_actual_higer_min1.setText(str(-self.integ.higer_min_edi))
+        #         self.integ.small_sigma_edi = float(self.small_sigma_edit1.text())
+        #         self.label_actual_small_sigma1.setText(str(self.integ.small_sigma_edi))
         #     except:
         #         pass
+        # Values getted
+        peaks, antipeaks, smoothed_edi = get_edi_peaks(self.data_edi,
+                                                       big_sigma=self.integ.big_sigma_edi)
 
-        # if self.lower_max_input1.text() != "":
-        #     try:
-        #         self.integ.lower_max_edi = float(self.lower_max_input1.text())
-        #         self.label_actual_lower_max1.setText(str(self.integ.lower_max_edi))
-        #     except:
-        #         pass
-
-        self.plot_edi.plot_edi_peaks()
+        # Ploting
+        self.plot_edi.canvas.clean()
+        if self.check_box_smooth_1.isChecked():
+            self.plot_edi.canvas.plot_smoothed_edi(smoothed_edi)
+        self.plot_edi.canvas.plot_raw_data()
+        self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
         self.plot_edi.canvas.plot_70_points(self.integ.points_70_percent())
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
 
-        # if self.higher_min_input2.text() != "":
-            # try:
-                # self.integ.higer_min_pes = -float(self.higher_min_input2.text())
-                # self.label_actual_higher_min2.setText(str(-self.integ.higer_min_pes))
-            # except:
-                # pass
+        if self.big_sigma_input2.text() != "":
+            try:
+                self.integ.big_sigma_pes = float(self.big_sigma_input2.text())
+                self.label_actual_big_sigma2.setText(
+                    str(self.integ.big_sigma_pes))
+            except:
+                pass
 
-        # if self.lower_max_input2.text() != "":
-            # try:
-            #     self.integ.lower_max_pes = float(self.lower_max_input2.text())
-            #     self.label_actual_lower_max2.setText(str(self.integ.lower_max_pes))
-            # except:
-            #     pass
-
-        self.plot_pes.canvas.clean()
-        self.plot_pes.plot_pes_peaks()
-        self.plot_pes.canvas.plot_70_points(self.integ.points_70_percent())
+        if self.small_sigma_input2.text() != "":
+            try:
+                self.integ.small_sigma_pes = float(
+                    self.small_sigma_input2.text())
+                self.label_actual_small_sigma2.setText(
+                    str(self.integ.small_sigma_pes))
+            except:
+                pass
+        # values getted
+        peaks, big_smoothing, small_smoothing = get_pes_peaks(self.data_pes,
+                                                              big_sigma=self.integ.big_sigma_pes,
+                                                              small_sigma=self.integ.small_sigma_pes)
         self.integ_results = self.integ.integration()
+
+        # Ploting
+        self.plot_pes.canvas.clean()
+        if self.check_box_smooth_2.isChecked():
+            self.plot_pes.canvas.plot_smoothed_pes(
+                big_smoothing, small_smoothing)
+        self.plot_pes.canvas.plot_raw_data()
+        self.plot_pes.canvas.pes_peaks_update(peaks)
+        self.plot_pes.canvas.plot_70_points(self.integ.points_70_percent())
+
         self.plot_pes.canvas.plot_integration(self.integ_results)
         self.plot_pes.canvas.draw()
 
@@ -94,22 +116,6 @@ class WidgetPlot(QWidget):
         self.layout().addWidget(self.toolbar)
         self.layout().addWidget(self.canvas)
         print(args)
-
-    def plot_edi_peaks(self):
-        '''
-        Plot the peaks of the edi curve stored
-        '''
-        peaks, antipeaks = get_edi_peaks(self.data)
-        self.canvas.edi_peaks_update(peaks, antipeaks)
-
-    def plot_pes_peaks(self):
-        '''
-        Plot the peaks of the pes curve stored
-        '''
-        peaks = get_pes_peaks(self.data)
-        self.canvas.pes_peaks_update(peaks)
-
-
 
 
 class PlotCanvas(FigureCanvas):
@@ -138,16 +144,16 @@ class PlotCanvas(FigureCanvas):
     def clean(self):
         self.ax.clear()
 
-    def edi_peaks_update(self, peaks, antipeaks):
+    def plot_raw_data(self):
         self.ax.plot(self.data, 'r-', linewidth=0.5)
+
+    def edi_peaks_update(self, peaks, antipeaks):
         self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
         self.ax.plot(antipeaks, [self.data[x_a_peak]
                      for x_a_peak in antipeaks], 'b+')
 
     def pes_peaks_update(self, peaks):
-        self.ax.plot(self.data, 'r-', linewidth=0.5)
         self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
-
 
     def plot_70_points(self, ind_70):
         '''
@@ -158,13 +164,15 @@ class PlotCanvas(FigureCanvas):
 
     def plot_integration(self, int_data):
         for x in int_data:
-            # self.ax.axvline(x = x[1], color='b')
-            # self.ax.axvline(x = x[2], color='g')
             self.ax.plot([x[1], x[2]],
-                [self.data[x[1]], self.data[x[1]]], 'g-')
+                         [self.data[x[1]], self.data[x[1]]], 'g-')
 
             self.ax.plot([x[2], x[2]],
-                [self.data[x[1]], self.data[x[2]]], 'g-')
+                         [self.data[x[1]], self.data[x[2]]], 'g-')
 
+    def plot_smoothed_edi(self, smoothed_edi):
+        self.ax.plot(smoothed_edi, 'y-')
 
-
+    def plot_smoothed_pes(self, big_smoothing, small_smoothing):
+        self.ax.plot(big_smoothing, 'y-')
+        self.ax.plot(small_smoothing, 'c-')
