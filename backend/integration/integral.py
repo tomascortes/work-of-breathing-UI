@@ -45,7 +45,7 @@ class Integration:
         [integral_value, start_integral, end_integral]
         '''
         integral_values = []
-        dx = 100
+        dx = 1/100
 
         index_peaks_pes, _, _ = get_pes_peaks(self.data_pes,
                                               big_sigma=self.big_sigma_pes,
