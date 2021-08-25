@@ -6,6 +6,7 @@ import random
 
 from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
 from backend.integration.integral import Integration
+from create_output.output_data import create_excel
 from frontend.analiser.layout import init_ui
 
 
@@ -24,6 +25,7 @@ class Analiser(QMainWindow):
         self.data_edi = data_edi
         self.data_pes = data_pes
         self.integ = Integration(data_edi, data_pes)
+        self.integ_results = None
 
         # Add plot 1 to layout
         self.plot_edi = WidgetPlot(self, data=self.data_edi)
@@ -72,11 +74,13 @@ class Analiser(QMainWindow):
         self.plot_pes.canvas.clean()
         self.plot_pes.plot_pes_peaks()
         self.plot_pes.canvas.plot_70_points(self.integ.points_70_percent())
-        self.plot_pes.canvas.plot_integration(self.integ.integration())
+        self.integ_results = self.integ.integration()
+        self.plot_pes.canvas.plot_integration(self.integ_results)
         self.plot_pes.canvas.draw()
 
     def export_data(self):
-        pass
+        if self.integ_results:
+            create_excel(self.integ_results)
 
 
 class WidgetPlot(QWidget):
