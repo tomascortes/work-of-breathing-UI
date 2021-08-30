@@ -1,5 +1,5 @@
-from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
-
+from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
+from params import MAX_INTEGRAL_VALUE
 
 class Integration:
     def __init__(self, data_edi, data_pes):
@@ -11,13 +11,13 @@ class Integration:
         self.big_sigma_edi = 300
         self.big_sigma_pes = 300
 
-    def points_70_percent(self) -> list:
+    def points_75_percent(self) -> list:
         '''
         returns the list of the index of all points 
-        where the decreasing edi curve reaches the 70%
+        where the decreasing edi curve reaches the 75%
         of the amplitude
         '''
-        indexes_70 = []
+        indexes_75 = []
         peaks, antipeaks, _ = get_edi_peaks(
             self.data_edi, big_sigma=self.big_sigma_pes)
         peak_index = 0
@@ -30,13 +30,13 @@ class Integration:
             min_v = self.data_edi[anti_p_index]
             max_v = self.data_edi[peaks[peak_index]]
             amplitude = max_v - min_v
-            for index_70 in range(peaks[peak_index], anti_p_index + 1):
-                if self.data_edi[index_70] <= amplitude*0.7:
-                    indexes_70.append(index_70)
+            for index_75 in range(peaks[peak_index], anti_p_index + 1):
+                if self.data_edi[index_75] <= amplitude*0.7:
+                    indexes_75.append(index_75)
                     peak_index += 1
                     break
 
-        return indexes_70
+        return indexes_75
 
     def integration(self) -> list:
         '''
@@ -50,29 +50,43 @@ class Integration:
         index_peaks_pes, _, _ = get_pes_peaks(self.data_pes,
                                               big_sigma=self.big_sigma_pes,
                                               small_sigma=self.small_sigma_pes)
-        index_70 = self.points_70_percent()
+        index_75 = self.points_75_percent()
+
 
         for start_pointer in range(len(index_peaks_pes) - 1):
             max_value = self.data_pes[index_peaks_pes[start_pointer]]
             s = 0
             end_pointer = self.next_pes_int_stop(
-                start_pointer, index_peaks_pes, index_70)
+                start_pointer, index_peaks_pes, index_75)
             if not end_pointer:
                 continue
-            for x in range(index_peaks_pes[start_pointer], index_70[end_pointer]):
-                s += (max_value - self.data_pes[x])*dx
 
+            len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            s = sum(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            s = max_value*len_cicle - s
+            s *= dx
+            if MAX_INTEGRAL_VALUE < s:
+                continue
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_peaks_pes[start_pointer], index_70[end_pointer]])
+                [s, index_peaks_pes[start_pointer], index_75[end_pointer]])
+
+        # If there are repeated ends of integral, we keep just the last one
+        count = 0
+        while count < len(integral_values) -1:
+            if integral_values[count][2] == integral_values[count + 1][2]:
+                integral_values.pop(count)
+            else:
+                count += 1
+
         return integral_values
 
-    def next_pes_int_stop(self, start_pointer, index_peaks_pes, index_70) -> int:
+    def next_pes_int_stop(self, start_pointer, index_peaks_pes, index_75) -> int:
         '''
         Recives int used as pointer start_pointer, the list of index_peaks_pes and
-        teh list of index_70 and return the pointer corresponding to the next 
-        index_70 value'''
+        teh list of index_75 and return the pointer corresponding to the next 
+        index_75 value'''
 
-        for i in range(len(index_70)):
-            if index_70[i] > index_peaks_pes[start_pointer]:
+        for i in range(len(index_75)):
+            if index_75[i] > index_peaks_pes[start_pointer]:
                 return i
