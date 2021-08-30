@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter
 from scipy.signal import find_peaks
-from data_manage.read_data import read_file
+
+from src.data_manage.read_data import read_file
 
 
-def get_edi_peaks(data, big_sigma=300, dist_from_pl=0, dist=70, prom=1) -> tuple:
+def get_edi_peaks(data, big_sigma=300, dist_from_pl=0, dist=75, prom=1) -> tuple:
     """receives a list with a edi signal, find its peaks and valleys (antipeaks),
     returning it as a tuple of the arrays of positions of the peaks in the data with 
     the smoothed curve.

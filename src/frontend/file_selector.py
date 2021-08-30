@@ -1,14 +1,14 @@
 from PyQt5 import uic
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFileDialog
 import os
 
 
-window_name, base_class = uic.loadUiType("frontend/ui_files/menu.ui")
+window_name, base_class = uic.loadUiType("src/frontend/ui_files/menu.ui")
 
 
 class Menu(window_name, base_class):
-    trigger = pyqtSignal(str)
+    trigger = pyqtSignal(tuple)
 
     def __init__(self):
         super().__init__()
@@ -35,9 +35,10 @@ class Menu(window_name, base_class):
 
         self.label_path_info.setText("El archivo seleccionado es:")
         self.label_path.setText(new_path)
+        self.file_name = new_path
 
     def continue_to_processing(self):
-        self.trigger.emit(self.excel_path)
+        self.trigger.emit((self.excel_path, self.file_name))
 
     def path_file_selector(self):
         response = QFileDialog.getOpenFileName(

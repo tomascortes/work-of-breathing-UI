@@ -1,17 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QSizePolicy
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PyQt5 import QtCore
 
-from backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
-from backend.integration.integral import Integration
-from data_manage.output_data import create_excel
-from frontend.analiser.layout import init_ui
+from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
+from src.backend.integration.integral import Integration
+from src.data_manage.output_data import create_excel
+from src.frontend.analiser.layout import init_ui
 
 
 class Analiser(QMainWindow):
-    def __init__(self, data_edi, data_pes):
+    def __init__(self, data_edi, data_pes, f_name):
         QMainWindow.__init__(self)
 
         # Format variables
@@ -26,6 +25,7 @@ class Analiser(QMainWindow):
         self.data_pes = data_pes
         self.integ = Integration(data_edi, data_pes)
         self.integ_results = None
+        self.file_name = f_name
 
         # Add plot 1 to layout
         self.plot_edi = WidgetPlot(self, data=self.data_edi)
@@ -61,7 +61,7 @@ class Analiser(QMainWindow):
             self.plot_edi.canvas.plot_smoothed_edi(smoothed_edi)
         self.plot_edi.canvas.plot_raw_data()
         self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
-        self.plot_edi.canvas.plot_70_points(self.integ.points_70_percent())
+        self.plot_edi.canvas.plot_75_points(self.integ.points_75_percent())
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
@@ -95,14 +95,17 @@ class Analiser(QMainWindow):
                 big_smoothing, small_smoothing)
         self.plot_pes.canvas.plot_raw_data()
         self.plot_pes.canvas.pes_peaks_update(peaks)
-        self.plot_pes.canvas.plot_70_points(self.integ.points_70_percent())
+        self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
 
         self.plot_pes.canvas.plot_integration(self.integ_results)
         self.plot_pes.canvas.draw()
 
     def export_data(self):
-        if self.integ_results:
-            create_excel(self.integ_results)
+        peaks, antipeaks, _ = get_edi_peaks(self.data_edi,
+                                            big_sigma=self.integ.big_sigma_edi)
+        self.integ_results = self.integ.integration()
+        create_excel(self.integ_results, peaks,
+                     antipeaks, f_name=self.file_name)
 
 
 class WidgetPlot(QWidget):
@@ -155,20 +158,27 @@ class PlotCanvas(FigureCanvas):
     def pes_peaks_update(self, peaks):
         self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
 
-    def plot_70_points(self, ind_70):
+    def plot_75_points(self, ind_75):
         '''
         Plot the points where the decreasing pes
-        curve, reaches 70%
+        curve, reaches 75%
         '''
-        self.ax.plot(ind_70, [self.data[x_peak] for x_peak in ind_70], 'gx')
+        self.ax.plot(ind_75, [self.data[x_peak] for x_peak in ind_75], 'gx')
 
     def plot_integration(self, int_data):
+        c = 0
         for x in int_data:
             self.ax.plot([x[1], x[2]],
                          [self.data[x[1]], self.data[x[1]]], 'g-')
 
             self.ax.plot([x[2], x[2]],
                          [self.data[x[1]], self.data[x[2]]], 'g-')
+
+            tx = (x[1] + x[2])/2
+            ty = (self.data[x[1]] + self.data[x[1]])/2
+
+            self.ax.annotate(str(c), xy=(tx, ty))
+            c += 1
 
     def plot_smoothed_edi(self, smoothed_edi):
         self.ax.plot(smoothed_edi, 'y-')
