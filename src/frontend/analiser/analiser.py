@@ -24,7 +24,7 @@ class Analiser(QMainWindow):
         self.data_edi = data_edi
         self.data_pes = data_pes
         self.integ = Integration(data_edi, data_pes)
-        self.integ_results = None
+        self.integ_results_pes = None
         self.file_name = f_name
 
         # Add plot 1 to layout
@@ -54,6 +54,7 @@ class Analiser(QMainWindow):
         # Values getted
         peaks, antipeaks, smoothed_edi = get_edi_peaks(self.data_edi,
                                                        big_sigma=self.integ.big_sigma_edi)
+        self.integ_results_edi = self.integ.integration_edi()
 
         # Ploting
         self.plot_edi.canvas.clean()
@@ -62,6 +63,7 @@ class Analiser(QMainWindow):
         self.plot_edi.canvas.plot_raw_data()
         self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
         self.plot_edi.canvas.plot_75_points(self.integ.points_75_percent())
+        self.plot_edi.canvas.plot_integration(self.integ_results_edi)
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
@@ -86,7 +88,7 @@ class Analiser(QMainWindow):
         peaks, big_smoothing, small_smoothing = get_pes_peaks(self.data_pes,
                                                               big_sigma=self.integ.big_sigma_pes,
                                                               small_sigma=self.integ.small_sigma_pes)
-        self.integ_results = self.integ.integration()
+        self.integ_results_pes = self.integ.integration_pes()
 
         # Ploting
         self.plot_pes.canvas.clean()
@@ -97,15 +99,20 @@ class Analiser(QMainWindow):
         self.plot_pes.canvas.pes_peaks_update(peaks)
         self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
 
-        self.plot_pes.canvas.plot_integration(self.integ_results)
+        self.plot_pes.canvas.plot_integration(self.integ_results_pes)
         self.plot_pes.canvas.draw()
 
     def export_data(self):
         peaks, antipeaks, _ = get_edi_peaks(self.data_edi,
                                             big_sigma=self.integ.big_sigma_edi)
-        self.integ_results = self.integ.integration()
-        create_excel(self.integ_results, peaks,
-                     antipeaks, f_name=self.file_name)
+        self.integ_results_pes = self.integ.integration_pes()
+        self.integ_results_edi = self.integ.integration_edi()
+        create_excel(
+            self.integ_results_pes, 
+            self.integ_results_edi, 
+            peaks,
+            antipeaks, 
+            f_name=self.file_name)
 
 
 class WidgetPlot(QWidget):
