@@ -38,11 +38,11 @@ class Integration:
 
         return indexes_75
 
-    def integration(self) -> list:
+    def integration_pes(self) -> list:
         '''
         Return list of lists where each list
         contains
-        [integral_value, start_integral, end_integral]
+        [integral_value on pes, start_integral, end_integral]
         '''
         integral_values = []
         dx = 1/100
@@ -56,7 +56,7 @@ class Integration:
         for start_pointer in range(len(index_peaks_pes) - 1):
             max_value = self.data_pes[index_peaks_pes[start_pointer]]
             s = 0
-            end_pointer = self.next_pes_int_stop(
+            end_pointer = self.next_75_value(
                 start_pointer, index_peaks_pes, index_75)
             if not end_pointer:
                 continue
@@ -81,12 +81,53 @@ class Integration:
 
         return integral_values
 
-    def next_pes_int_stop(self, start_pointer, index_peaks_pes, index_75) -> int:
+
+    def integration_edi(self) -> list:
+        integral_values = []
+        dx = 1/100
+
+        _, index_anti_peaks, _ = get_edi_peaks(self.data_edi,
+                                              big_sigma=self.big_sigma_edi)
+        index_75 = self.points_75_percent()
+
+
+        for start_pointer in range(len(index_anti_peaks) - 1):
+            min_value = self.data_edi[index_anti_peaks[start_pointer]]
+            s = 0
+            end_pointer = self.next_75_value(
+                start_pointer, index_anti_peaks, index_75)
+            if not end_pointer:
+                continue
+
+            len_cicle = len(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
+            # First we sum all the values from 0 to the edi curve
+            s = sum(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
+            # Then we rest the rectangle corresponding to the min value
+            s = s- min_value*len_cicle
+            # to optimize the process we multiply at the end for the dx
+            s *= dx
+            if MAX_INTEGRAL_VALUE < s:
+                continue
+            # store the values with the corresponding ones used to calculate them
+            integral_values.append(
+                [s, index_anti_peaks[start_pointer], index_75[end_pointer]])
+
+        # If there are repeated ends of integral, we keep just the last one
+        count = 0
+        while count < len(integral_values) -1:
+            if integral_values[count][2] == integral_values[count + 1][2]:
+                integral_values.pop(count)
+            else:
+                count += 1
+
+        return integral_values
+
+    def next_75_value(self, start_pointer, index_peaks, index_75) -> int:
         '''
-        Recives int used as pointer start_pointer, the list of index_peaks_pes and
+        Recives int used as pointer start_pointer, the list of index_peaks and
         teh list of index_75 and return the pointer corresponding to the next 
         index_75 value'''
 
         for i in range(len(index_75)):
-            if index_75[i] > index_peaks_pes[start_pointer]:
+            if index_75[i] > index_peaks[start_pointer]:
                 return i

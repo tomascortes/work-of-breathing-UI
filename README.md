@@ -7,3 +7,8 @@ PyQt5
 openpyxl
 xlrd
 matplotlib
+
+# Usage
+Excecute main.py
+# Info
+The small and big smoothing parameter can´t be the same
