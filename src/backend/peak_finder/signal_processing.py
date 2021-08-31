@@ -33,11 +33,11 @@ def get_edi_peaks(data, big_sigma=300, dist_from_pl=0, dist=75, prom=1) -> tuple
     return (peaks, antipeaks, peak_lims)
 
 
-def get_pes_peaks(data, big_sigma=300, small_sigma=25, dist_from_pl=0, dist=1, prom=0.07) -> list:
+def get_pes_peaks(data, big_sigma=300, small_sigma=25, dist_from_pl=0, dist=1, prom=0.07) -> tuple:
     """receives a list with a pes signal, and find the local peaks just
     before the the cycles starts decending to its valley.
-    Returns numpy array of x-axis positions of peaks in signal with 
-    the very smoothed curve and less smoothed curve.
+    Returns numpy array of x-axis positions of peaks in signal, 
+    the very smoothed curve and the less smoothed curve.
     big_sigma and small_sigma: The function returns the first peaks before each inflection point
     of the signal, wich are aproximated as the intersection of a smoothed version of the origianl
     signal with sigma big_sigma and other version smoothed with small_sigma.
