@@ -2,7 +2,7 @@ from openpyxl import Workbook, load_workbook
 import datetime
 from pathlib import Path
 import numpy as np
-
+import os
 
 def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_name="") -> tuple:
     """recives a list of lists with shape:
@@ -71,7 +71,8 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         ws.append(ap_aux)
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    file_name = f_name + timestamp + ".xlsx"
+    f_name = os.path.splitext(f_name)[0]
+    file_name = f_name + "_" + timestamp + ".xlsx"
     output_dir_path = "calculated_data"
     # Create output folder if it doesnt exists
     Path(output_dir_path).mkdir(parents=True, exist_ok=True)
