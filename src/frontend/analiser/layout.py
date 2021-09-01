@@ -23,17 +23,17 @@ def init_ui(self):
     # Lower max value related
     # ++++++++++++++++++++++++++
     # Items
-    # self.label_first_text1 = QLabel('Suavizado pequeño:', self)
-    # self.small_sigma_input1 = QLineEdit(self)
-    # self.label_actual_small_sigma1 = QLabel(str(self.integ.small_sigma_edi), self)
+    self.label_first_text1 = QLabel('Suavizado pequeño:', self)
+    self.small_sigma_input1 = QLineEdit(self)
+    self.label_actual_small_sigma1 = QLabel(str(self.integ.small_sigma_edi), self)
 
-    # # Placement in layout
-    # hlay_first.addWidget(self.label_first_text1)
-    # hlay_first.addWidget(self.small_sigma_input1)
-    # hlay_first.addWidget(self.label_actual_small_sigma1)
-    # hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # Placement in layout
+    hlay_first.addWidget(self.label_first_text1)
+    hlay_first.addWidget(self.small_sigma_input1)
+    hlay_first.addWidget(self.label_actual_small_sigma1)
+    hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    # vlay.addLayout(hlay_first)
+    vlay.addLayout(hlay_first)
 
     # Higer max related
     # ++++++++++++++++++++++++++

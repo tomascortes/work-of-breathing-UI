@@ -45,12 +45,12 @@ class Analiser(QMainWindow):
             except:
                 pass
 
-        # if self.small_sigma_edit1.text() != "":
-        #     try:
-        #         self.integ.small_sigma_edi = float(self.small_sigma_edit1.text())
-        #         self.label_actual_small_sigma1.setText(str(self.integ.small_sigma_edi))
-        #     except:
-        #         pass
+        if self.small_sigma_input1.text() != "":
+            try:
+                self.integ.small_sigma_edi = float(self.small_sigma_input1.text())
+                self.label_actual_small_sigma1.setText(str(self.integ.small_sigma_edi))
+            except:
+                pass
         # Values getted
         peaks, antipeaks, smoothed_edi = get_edi_peaks(self.data_edi,
                                                        big_sigma=self.integ.big_sigma_edi)
