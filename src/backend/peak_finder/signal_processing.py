@@ -53,7 +53,7 @@ def get_edi_peaks(data, smoothing_sigma=2.1, big_sigma=300, small_sigma=25, dist
     antipeaks, smoothed_sgnl, very_smoothed_sgnl, less_smoothed_sgnl = get_edi_antipeaks(
         data, smoothing_sigma=smoothing_sigma, big_sigma=big_sigma, small_sigma=small_sigma, dist_from_pl=dist_from_pl)
 
-    return (peaks, antipeaks, peak_lims)
+    return (peaks, antipeaks, very_smoothed_sgnl, less_smoothed_sgnl)
 
 def get_edi_antipeaks(data, smoothing_sigma =2.1, big_sigma=300, small_sigma=25, dist_from_pl=0, dist=1, prom=0) -> tuple:
     """receives a list with a edi signal, and find the local valley just

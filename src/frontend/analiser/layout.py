@@ -58,9 +58,11 @@ def init_ui(self):
 
     # Checkbox
     self.check_box_smooth_1 = QCheckBox("Mostrar curva de suavizado.")
+    self.check_peak_method = QCheckBox("Utilizar metodo antiguo minimos locales.")
 
     first_super_vlay2.addLayout(hlay_first2)
     first_super_vlay2.addWidget(self.check_box_smooth_1)
+    first_super_vlay2.addWidget(self.check_peak_method)
     first_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(first_super_vlay2)
 
