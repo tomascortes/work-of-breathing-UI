@@ -10,7 +10,7 @@ class Integration:
         self.small_sigma_edi = 25
         self.big_sigma_pes = 300
         self.small_sigma_pes = 25
-        old_edi_method = False
+        self.old_edi_method = False
 
 
     def points_75_percent(self) -> list:
@@ -94,10 +94,17 @@ class Integration:
     def integration_edi(self) -> list:
         integral_values = []
         dx = 1/100
+        if self.old_edi_method:
+            _, index_anti_peaks, _ = get_edi_peaks_old(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes)
+        else:
+            _, index_anti_peaks, _, _= get_edi_peaks(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes,
+                small_sigma = self.small_sigma_pes)
 
-        _, index_anti_peaks, _, _ = get_edi_peaks(self.data_edi,
-                                              big_sigma=self.big_sigma_edi,
-                                              small_sigma=self.small_sigma_edi)
+
         index_75 = self.points_75_percent()
 
 

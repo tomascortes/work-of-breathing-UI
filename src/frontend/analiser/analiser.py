@@ -33,6 +33,11 @@ class Analiser(QMainWindow):
         self.plot_pes = WidgetPlot(
             self, data=self.data_pes, shared_ax=self.plot_edi.canvas.ax)
 
+        self.plot_edi.canvas.ax.set_title('Edi Signal')
+        self.plot_pes.canvas.ax.set_title('Pes Signal')
+
+
+
         init_ui(self)
         self.showMaximized()
 
@@ -82,6 +87,7 @@ class Analiser(QMainWindow):
         self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
         self.plot_edi.canvas.plot_75_points(self.integ.points_75_percent())
         self.plot_edi.canvas.plot_integration(self.integ_results_edi)
+        self.plot_edi.canvas.ax.set_title('Edi Signal')
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
@@ -122,6 +128,7 @@ class Analiser(QMainWindow):
         self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
 
         self.plot_pes.canvas.plot_integration(self.integ_results_pes)
+        self.plot_pes.canvas.ax.set_title('Pes Signal')
         self.plot_pes.canvas.draw()
 
     def export_data(self):
@@ -171,7 +178,6 @@ class PlotCanvas(FigureCanvas):
         else:
             self.ax = self.figure.add_subplot(111)
         self.ax.plot(self.data, 'r-', linewidth=0.5)
-        self.ax.set_title('Edi Signal')
         self.draw()
 
     def clean(self):
