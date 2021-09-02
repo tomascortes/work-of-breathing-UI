@@ -3,7 +3,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
+from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks, get_edi_peaks_old
 from src.backend.integration.integral import Integration
 from src.data_manage.output_data import create_excel
 from src.frontend.analiser.layout import init_ui
@@ -33,6 +33,11 @@ class Analiser(QMainWindow):
         self.plot_pes = WidgetPlot(
             self, data=self.data_pes, shared_ax=self.plot_edi.canvas.ax)
 
+        self.plot_edi.canvas.ax.set_title('Edi Signal')
+        self.plot_pes.canvas.ax.set_title('Pes Signal')
+
+
+
         init_ui(self)
         self.showMaximized()
 
@@ -45,25 +50,44 @@ class Analiser(QMainWindow):
             except:
                 pass
 
-        # if self.small_sigma_edit1.text() != "":
-        #     try:
-        #         self.integ.small_sigma_edi = float(self.small_sigma_edit1.text())
-        #         self.label_actual_small_sigma1.setText(str(self.integ.small_sigma_edi))
-        #     except:
-        #         pass
+        if self.small_sigma_input1.text() != "":
+            try:
+                self.integ.small_sigma_edi = float(
+                    self.small_sigma_input1.text())
+                self.label_actual_small_sigma1.setText(
+                    str(self.integ.small_sigma_edi))
+            except:
+                pass
+        if self.integ.small_sigma_edi == self.integ.big_sigma_edi:
+            self.integ.big_sigma_edi += 3
+
         # Values getted
-        peaks, antipeaks, smoothed_edi = get_edi_peaks(self.data_edi,
-                                                       big_sigma=self.integ.big_sigma_edi)
+        if self.check_peak_method.isChecked():
+            self.integ.old_edi_method = True
+            peaks, antipeaks, b_smooth = get_edi_peaks_old(
+                self.data_edi,
+                big_sigma=self.integ.big_sigma_edi)
+            s_smooth = []
+        else:
+            self.integ.old_edi_method = False
+            peaks, antipeaks, b_smooth, s_smooth = get_edi_peaks(
+                data=self.data_edi,
+                big_sigma=self.integ.big_sigma_edi,
+                small_sigma=self.integ.small_sigma_edi)
+            b_smooth, s_smooth = - b_smooth, - s_smooth
+
         self.integ_results_edi = self.integ.integration_edi()
 
         # Ploting
         self.plot_edi.canvas.clean()
         if self.check_box_smooth_1.isChecked():
-            self.plot_edi.canvas.plot_smoothed_edi(smoothed_edi)
+            self.plot_edi.canvas.plot_smoothed(b_smooth, s_smooth)
+
         self.plot_edi.canvas.plot_raw_data()
         self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
         self.plot_edi.canvas.plot_75_points(self.integ.points_75_percent())
         self.plot_edi.canvas.plot_integration(self.integ_results_edi)
+        self.plot_edi.canvas.ax.set_title('Edi Signal')
         self.plot_edi.canvas.draw()
 
     def pes_button_clicked(self):
@@ -84,34 +108,40 @@ class Analiser(QMainWindow):
                     str(self.integ.small_sigma_pes))
             except:
                 pass
+
+        if self.integ.small_sigma_pes == self.integ.big_sigma_pes:
+            self.integ.big_sigma_pes += 3
         # values getted
-        peaks, big_smoothing, small_smoothing = get_pes_peaks(self.data_pes,
-                                                              big_sigma=self.integ.big_sigma_pes,
-                                                              small_sigma=self.integ.small_sigma_pes)
+        peaks, big_smoothing, small_smoothing = get_pes_peaks(
+            self.data_pes,
+            big_sigma=self.integ.big_sigma_pes,
+            small_sigma=self.integ.small_sigma_pes)
         self.integ_results_pes = self.integ.integration_pes()
 
         # Ploting
         self.plot_pes.canvas.clean()
         if self.check_box_smooth_2.isChecked():
-            self.plot_pes.canvas.plot_smoothed_pes(
+            self.plot_pes.canvas.plot_smoothed(
                 big_smoothing, small_smoothing)
         self.plot_pes.canvas.plot_raw_data()
         self.plot_pes.canvas.pes_peaks_update(peaks)
         self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
 
         self.plot_pes.canvas.plot_integration(self.integ_results_pes)
+        self.plot_pes.canvas.ax.set_title('Pes Signal')
         self.plot_pes.canvas.draw()
 
     def export_data(self):
-        peaks, antipeaks, _ = get_edi_peaks(self.data_edi,
-                                            big_sigma=self.integ.big_sigma_edi)
+        peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
+                                               big_sigma=self.integ.big_sigma_edi,
+                                               small_sigma=self.integ.small_sigma_edi)
         self.integ_results_pes = self.integ.integration_pes()
         self.integ_results_edi = self.integ.integration_edi()
         create_excel(
-            self.integ_results_pes, 
-            self.integ_results_edi, 
+            self.integ_results_pes,
+            self.integ_results_edi,
             peaks,
-            antipeaks, 
+            antipeaks,
             f_name=self.file_name)
 
 
@@ -148,7 +178,6 @@ class PlotCanvas(FigureCanvas):
         else:
             self.ax = self.figure.add_subplot(111)
         self.ax.plot(self.data, 'r-', linewidth=0.5)
-        self.ax.set_title('Edi Signal')
         self.draw()
 
     def clean(self):
@@ -187,9 +216,6 @@ class PlotCanvas(FigureCanvas):
             self.ax.annotate(str(c), xy=(tx, ty))
             c += 1
 
-    def plot_smoothed_edi(self, smoothed_edi):
-        self.ax.plot(smoothed_edi, 'y-')
-
-    def plot_smoothed_pes(self, big_smoothing, small_smoothing):
+    def plot_smoothed(self, big_smoothing, small_smoothing):
         self.ax.plot(big_smoothing, 'y-')
         self.ax.plot(small_smoothing, 'c-')

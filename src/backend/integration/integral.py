@@ -1,4 +1,4 @@
-from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks
+from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks,get_edi_peaks_old
 from params import MAX_INTEGRAL_VALUE
 
 class Integration:
@@ -6,10 +6,12 @@ class Integration:
 
         self.data_edi = data_edi
         self.data_pes = data_pes
-        # self.small_sigma_edi = 25
-        self.small_sigma_pes = 25
         self.big_sigma_edi = 300
+        self.small_sigma_edi = 25
         self.big_sigma_pes = 300
+        self.small_sigma_pes = 25
+        self.old_edi_method = False
+
 
     def points_75_percent(self) -> list:
         '''
@@ -18,8 +20,15 @@ class Integration:
         of the amplitude
         '''
         indexes_75 = []
-        peaks, antipeaks, _ = get_edi_peaks(
-            self.data_edi, big_sigma=self.big_sigma_pes)
+        if self.old_edi_method:
+            peaks, antipeaks, _ = get_edi_peaks_old(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes)
+        else:
+            peaks, antipeaks, _, _= get_edi_peaks(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes,
+                small_sigma = self.small_sigma_pes)
         peak_index = 0
 
         # the start of the cicle is antipeak
@@ -85,9 +94,17 @@ class Integration:
     def integration_edi(self) -> list:
         integral_values = []
         dx = 1/100
+        if self.old_edi_method:
+            _, index_anti_peaks, _ = get_edi_peaks_old(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes)
+        else:
+            _, index_anti_peaks, _, _= get_edi_peaks(
+                self.data_edi, 
+                big_sigma=self.big_sigma_pes,
+                small_sigma = self.small_sigma_pes)
 
-        _, index_anti_peaks, _ = get_edi_peaks(self.data_edi,
-                                              big_sigma=self.big_sigma_edi)
+
         index_75 = self.points_75_percent()
 
 

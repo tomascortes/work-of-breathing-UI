@@ -23,17 +23,17 @@ def init_ui(self):
     # Lower max value related
     # ++++++++++++++++++++++++++
     # Items
-    # self.label_first_text1 = QLabel('Suavizado pequeño:', self)
-    # self.small_sigma_input1 = QLineEdit(self)
-    # self.label_actual_small_sigma1 = QLabel(str(self.integ.small_sigma_edi), self)
+    self.label_first_text1 = QLabel('Suavizado pequeño:', self)
+    self.small_sigma_input1 = QLineEdit(self)
+    self.label_actual_small_sigma1 = QLabel(str(self.integ.small_sigma_edi), self)
 
-    # # Placement in layout
-    # hlay_first.addWidget(self.label_first_text1)
-    # hlay_first.addWidget(self.small_sigma_input1)
-    # hlay_first.addWidget(self.label_actual_small_sigma1)
-    # hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+    # Placement in layout
+    hlay_first.addWidget(self.label_first_text1)
+    hlay_first.addWidget(self.small_sigma_input1)
+    hlay_first.addWidget(self.label_actual_small_sigma1)
+    hlay_first.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    # vlay.addLayout(hlay_first)
+    vlay.addLayout(hlay_first)
 
     # Higer max related
     # ++++++++++++++++++++++++++
@@ -58,9 +58,11 @@ def init_ui(self):
 
     # Checkbox
     self.check_box_smooth_1 = QCheckBox("Mostrar curva de suavizado.")
+    self.check_peak_method = QCheckBox("Utilizar metodo antiguo minimos locales.")
 
     first_super_vlay2.addLayout(hlay_first2)
     first_super_vlay2.addWidget(self.check_box_smooth_1)
+    first_super_vlay2.addWidget(self.check_peak_method)
     first_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(first_super_vlay2)
 
