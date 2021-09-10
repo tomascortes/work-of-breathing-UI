@@ -51,7 +51,7 @@ class Integration:
         '''
         Return list of lists where each list
         contains
-        [integral_value on pes, start_integral, end_integral]
+        [integral_value on pes, start_integral, end_integral, amplitud of cycle]
         '''
         integral_values = []
         dx = 1/100
@@ -69,16 +69,21 @@ class Integration:
                 start_pointer, index_peaks_pes, index_75)
             if not end_pointer:
                 continue
+            min_value = min(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            #Inferior Area
             s = sum(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            #superior Area minus the inferior area
             s = max_value*len_cicle - s
+            #giving result in seconds
             s *= dx
+            amplitude = max_value - min_value
             if MAX_INTEGRAL_VALUE < s:
                 continue
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_peaks_pes[start_pointer], index_75[end_pointer]])
+                [s, index_peaks_pes[start_pointer], index_75[end_pointer], amplitude])
 
         # If there are repeated ends of integral, we keep just the last one
         count = 0
@@ -115,6 +120,7 @@ class Integration:
                 start_pointer, index_anti_peaks, index_75)
             if not end_pointer:
                 continue
+            max_value = max(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
             # First we sum all the values from 0 to the edi curve
@@ -125,9 +131,10 @@ class Integration:
             s *= dx
             if MAX_INTEGRAL_VALUE < s:
                 continue
+            amplitude = max_value - min_value
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_anti_peaks[start_pointer], index_75[end_pointer]])
+                [s, index_anti_peaks[start_pointer], index_75[end_pointer], amplitude])
 
         # If there are repeated ends of integral, we keep just the last one
         count = 0

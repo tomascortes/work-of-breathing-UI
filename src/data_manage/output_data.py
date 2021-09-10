@@ -30,6 +30,8 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         "",
         "n_cycle_edi",
         "integral_value_edi",
+        "edi amplitude",
+        "pes Amplitude"
     ]
     ws.append(colum_names)
 
@@ -65,7 +67,9 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
             start_to_end_edi,  # margin edi complete
             "",
             i,#index of edi values
-            integ_data_edi[i][0],  # value integ edi
+            integ_data_edi[i][0], # value integ edi
+            integ_data_edi[i][3], # Amplitude edi
+            integ_data_pes[i][3], # Amplitude pes
         ]
 
         ws.append(ap_aux)
