@@ -9,7 +9,7 @@ The ending points of the Pes integral are computed as the points in which each E
 The PTP for each inspiration cycle is finally computed as the area over the Pes curve from each Pes's starting point to the next ending point.
  
 # Installation
-You need [Link text Here](https://www.python.org/) installed
+You need [Python](https://www.python.org/) installed
 
 To easily install the libraries you can execute (double click) the  file package_installer.py. This will install all extra liabraries, you need to do it just once.
 This install the libraries in [dependencies](#dependencies)
