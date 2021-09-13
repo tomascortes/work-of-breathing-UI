@@ -1,20 +1,9 @@
 # work-of-breathing-UI
 Software for obtaining PTP (Pressure-time product, a measure of breathing effort) values from respiratory data. Specifically, from Pes (esophageal pressure) and EAdi (electrical activity of the diaphragm) data obtained from patients with mechanical ventilatory assistance. Includes a user interface for displaying input signals and estimation of points of interest (start and end of inspiration).
- 
-# PTP estimation
-The starting points for computing the Pes integral are obtained by first finding the inflection points of the curve. The inflection points are estimated as the intersection points of two smoothed versions of the original curve (using a gaussian filter with two different user-inputted sigma values). Then the starting points are obtained as the first local peak before each inflection point. 
- 
-The ending points of the Pes integral are computed as the points in which each Edi cycle reaches 75% of its amplitude after the cycle's peak. The starting points of each Edi cycle are estimated in the same way as the Pes's starting points.
- 
-The PTP for each inspiration cycle is finally computed as the area over the Pes curve from each Pes's starting point to the next ending point, as follows:
-```
-# Assuming the frequency of input data is 100 data points per second
-CyclePTP = (PesData[startingPoint] * (endingPoint - startingPoint) - sum(PesData[startingPoint:endingPoint])) / 100
-```
-As shown in the user interface:
-[picture]
+
  
 # Installation
+
 You need [Python](https://www.python.org/) installed. Its important to check the box "Add Python to PATH"
  ![instalation example](./src/images/instalacion.jpg)
 
@@ -52,4 +41,16 @@ You can use de *Exportar datos* button to generate output. The output consists o
 * matplotlib
 * scipy
  
+
+ # PTP estimation
+The starting points for computing the Pes integral are obtained by first finding the inflection points of the curve. The inflection points are estimated as the intersection points of two smoothed versions of the original curve (using a gaussian filter with two different user-inputted sigma values). Then the starting points are obtained as the first local peak before each inflection point. 
+ 
+The ending points of the Pes integral are computed as the points in which each Edi cycle reaches 75% of its amplitude after the cycle's peak. The starting points of each Edi cycle are estimated in the same way as the Pes's starting points.
+ 
+The PTP for each inspiration cycle is finally computed as the area over the Pes curve from each Pes's starting point to the next ending point, as follows:
+```
+# Assuming the frequency of input data is 100 data points per second
+CyclePTP = (PesData[startingPoint] * (endingPoint - startingPoint) - sum(PesData[startingPoint:endingPoint])) / 100
+```
+
  
