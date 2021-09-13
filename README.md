@@ -16,7 +16,7 @@ This install the libraries in [dependencies](#dependencies)
 # Info
 The small and big smoothing parameter can´t be the same
 
-#Integration
+# Integration
 The integration is calculated like:
 in 1 second we have 100 samples, so to obtain the area 
 [picture]
