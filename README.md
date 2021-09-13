@@ -29,8 +29,8 @@ You can use de *Exportar datos* button to generate output. The output consists o
 * _t start pes->75%_: Time elapsed in seconds from _start_pes_ to _point_75%_
 * _t start pes-> start edi_: Time elapsed in seconds from _start_pes_ to _start_edi_.
 * _t start edi -> 75%_: Time elapsed in seconds from _start_edi_ to _point_75%_.
-* _t start edi -> peak edi_:  Time elapsed in seconds from _start_edi_ to maximum value of the cycle
-* _t start edi -> end edi_:Time elapsed in seconds from _start_edi_ to the start of the next cycle
+* _t start edi -> peak edi_:  Time elapsed in seconds from _start_edi_ to maximum value of the cycle.
+* _t start edi -> end edi_:Time elapsed in seconds from _start_edi_ to the start of the next cycle.
 * _edi Amplitude_: Amplitude of the Edi cycle.
 * _pes Amplitude_: Amplitude of the Pes cycle.
 
@@ -43,7 +43,7 @@ You can use de *Exportar datos* button to generate output. The output consists o
  
 
  # PTP estimation
-The starting points for computing the Pes integral are obtained by first finding the inflection points of the curve. The inflection points are estimated as the intersection points of two smoothed versions of the original curve (using a gaussian filter with two different user-inputted sigma values). Then the starting points are obtained as the first local peak before each inflection point. 
+The starting points for computing the Pes integral for each inspiration cycle are obtained by first finding the inflection points of the curve. The inflection points are estimated as the intersection points of two smoothed versions of the original curve (using a gaussian filter with two different user-inputted sigma values). Then the starting points are obtained as the first local peak before each inflection point. 
  
 The ending points of the Pes integral are computed as the points in which each Edi cycle reaches 75% of its amplitude after the cycle's peak. The starting points of each Edi cycle are estimated in the same way as the Pes's starting points.
  
