@@ -11,3 +11,8 @@ __pycache__/
 data
 output_data
 calculated_data
+
+# build folders
+build
+dist 
+main.spec

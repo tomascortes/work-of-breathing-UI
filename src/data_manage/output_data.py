@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 import os
 
+
 def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_name="") -> tuple:
     """recives a list of lists with shape:
     [integral_value, start_integral, end_integral]
@@ -28,14 +29,14 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         "t_start_edi -> 75%",
         "start_edi -> peak_edi",
         "start_edi -> end_edi",
-        "edi amplitude",
+        "edi Amplitude",
         "pes Amplitude"
     ]
     ws.append(colum_names)
 
     # Write data
     for cycle in range(len(integ_data_edi)):
-        
+
         start_pes = integ_data_edi[cycle][1]
         t_75 = integ_data_edi[cycle][2]
 
@@ -43,20 +44,19 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         start_edi = min(anti_peaks_edi, key=abs_difference)
         index_s_edi = np.where(anti_peaks_edi == start_edi)[0][0]
 
-
         index_peak_edi = next_edi_peak(peaks_edi, start_pes)
         peak_edi = peaks_edi[index_peak_edi]
 
         if len(anti_peaks_edi) > cycle + 1:
             minus_a = anti_peaks_edi[index_s_edi + 1] - start_edi
-            start_to_end_edi = (  minus_a)/100
+            start_to_end_edi = (minus_a)/100
         else:
             start_to_end_edi = "ultimo peak"
 
         ap_aux = [
             cycle,  # Number of cycle
             integ_data_pes[cycle][0],  # value integ pes
-            integ_data_edi[cycle][0], # value integ edi
+            integ_data_edi[cycle][0],  # value integ edi
             start_pes,  # start pes
             start_edi,  # start edi
             t_75,  # end pes and 75%
@@ -65,8 +65,8 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
             (t_75 - start_edi)/100,  # margin edi to 75%
             (peak_edi - start_edi)/100,  # margin edi to peak
             start_to_end_edi,  # margin edi complete
-            integ_data_edi[cycle][3], # Amplitude edi
-            integ_data_pes[cycle][3], # Amplitude pes
+            integ_data_edi[cycle][3],  # Amplitude edi
+            integ_data_pes[cycle][3],  # Amplitude pes
         ]
 
         ws.append(ap_aux)

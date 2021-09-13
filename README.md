@@ -12,7 +12,6 @@ The PTP for each inspiration cycle is finally computed as the area over the Pes 
 ## dependencies
 PyQt5
 openpyxl
-xlrd
 matplotlib
 
 Excecute main.py

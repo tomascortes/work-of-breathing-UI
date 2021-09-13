@@ -36,8 +36,6 @@ class Analiser(QMainWindow):
         self.plot_edi.canvas.ax.set_title('Edi Signal')
         self.plot_pes.canvas.ax.set_title('Pes Signal')
 
-
-
         init_ui(self)
         self.showMaximized()
 
@@ -48,10 +46,9 @@ class Analiser(QMainWindow):
         integ_edi, integ_pes = self.integ.coordinated_integrals()
         self.integ_results_edi = integ_edi
         self.integ_results_pes = integ_pes
-        
+
         self.edi_ploting()
         self.pes_ploting()
-
 
     def edi_input_update(self):
         if self.big_sigma_input1.text() != "":
@@ -89,7 +86,6 @@ class Analiser(QMainWindow):
                 small_sigma=self.integ.small_sigma_edi)
             b_smooth, s_smooth = - b_smooth, - s_smooth
 
-            
         # Ploting
         self.plot_edi.canvas.clean()
         if self.check_box_smooth_1.isChecked():
@@ -122,7 +118,7 @@ class Analiser(QMainWindow):
 
         if self.integ.small_sigma_pes == self.integ.big_sigma_pes:
             self.integ.big_sigma_pes += 3
-    
+
     def pes_ploting(self):
         # values getted
         peaks, big_smoothing, small_smoothing = get_pes_peaks(
@@ -144,6 +140,8 @@ class Analiser(QMainWindow):
         self.plot_pes.canvas.draw()
 
     def export_data(self):
+        self.statusBar().showMessage("Exportando")
+
         peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
                                                big_sigma=self.integ.big_sigma_edi,
                                                small_sigma=self.integ.small_sigma_edi)
@@ -158,7 +156,6 @@ class Analiser(QMainWindow):
             antipeaks,
             f_name=self.file_name)
         self.statusBar().showMessage(f'Archivo {self.file_name} exportado')
-        
 
 
 class WidgetPlot(QWidget):
