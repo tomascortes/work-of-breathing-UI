@@ -17,7 +17,9 @@ As shown in the user interface:
 # Installation
 You need [Python](https://www.python.org/) installed. Its important to check the box "Add Python to PATH"
  ![instalation example](./src/images/instalacion.jpg)
-To easily set up the necessary python libraries to run the software for the first time on your computer, you can execute (double click) the _package_installer.py_ file. This will automatically install all [dependencies](#dependencies).
+
+
+To easily set up the necessary python libraries to run the software for the first time on your computer, you can execute (double click) the _package_installer.py_ file in the _src_ folder. This will automatically install all [dependencies](#dependencies).
 # Usage
 ### Input
 Input data must consist of an excel file with a worksheet named: **Resumen para análisis**, in which the first two columns contain the synchronized (same length) EAdi and Pes data, in that order. Data values are read starting from the second row. All calculations are carried out under the assumption that the frequency of the input signals is **100 data points per second**.
