@@ -1,5 +1,5 @@
 from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks,get_edi_peaks_old
-from params import MAX_INTEGRAL_VALUE
+from src.backend.params import MAX_INTEGRAL_VALUE
 
 class Integration:
     def __init__(self, data_edi, data_pes):
@@ -51,7 +51,7 @@ class Integration:
         '''
         Return list of lists where each list
         contains
-        [integral_value on pes, start_integral, end_integral]
+        [integral_value on pes, start_integral, end_integral, amplitud of cycle]
         '''
         integral_values = []
         dx = 1/100
@@ -69,16 +69,21 @@ class Integration:
                 start_pointer, index_peaks_pes, index_75)
             if not end_pointer:
                 continue
+            min_value = min(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            #Inferior Area
             s = sum(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            #superior Area minus the inferior area
             s = max_value*len_cicle - s
+            #giving result in seconds
             s *= dx
+            amplitude = max_value - min_value
             if MAX_INTEGRAL_VALUE < s:
                 continue
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_peaks_pes[start_pointer], index_75[end_pointer]])
+                [s, index_peaks_pes[start_pointer], index_75[end_pointer], amplitude])
 
         # If there are repeated ends of integral, we keep just the last one
         count = 0
@@ -92,17 +97,22 @@ class Integration:
 
 
     def integration_edi(self) -> list:
+        '''
+        Return list of lists where each list
+        contains
+        [integral_value on edu, start_integral, end_integral, amplitud of cycle]
+        '''
         integral_values = []
         dx = 1/100
         if self.old_edi_method:
             _, index_anti_peaks, _ = get_edi_peaks_old(
                 self.data_edi, 
-                big_sigma=self.big_sigma_pes)
+                big_sigma=self.big_sigma_edi)
         else:
             _, index_anti_peaks, _, _= get_edi_peaks(
                 self.data_edi, 
-                big_sigma=self.big_sigma_pes,
-                small_sigma = self.small_sigma_pes)
+                big_sigma=self.big_sigma_edi,
+                small_sigma = self.small_sigma_edi)
 
 
         index_75 = self.points_75_percent()
@@ -115,6 +125,7 @@ class Integration:
                 start_pointer, index_anti_peaks, index_75)
             if not end_pointer:
                 continue
+            max_value = max(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_edi[index_anti_peaks[start_pointer]:index_75[end_pointer]])
             # First we sum all the values from 0 to the edi curve
@@ -125,9 +136,10 @@ class Integration:
             s *= dx
             if MAX_INTEGRAL_VALUE < s:
                 continue
+            amplitude = max_value - min_value
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_anti_peaks[start_pointer], index_75[end_pointer]])
+                [s, index_anti_peaks[start_pointer], index_75[end_pointer], amplitude])
 
         # If there are repeated ends of integral, we keep just the last one
         count = 0
@@ -148,3 +160,26 @@ class Integration:
         for i in range(len(index_75)):
             if index_75[i] > index_peaks[start_pointer]:
                 return i
+
+    def coordinated_integrals(self):
+        integ_edi = self.integration_edi()
+        integ_pes = self.integration_pes()
+        count = 0
+        while count < len(integ_edi) - 1 and count < len(integ_edi) -1 :
+            if integ_edi[count][2] == integ_pes[count][2]:
+                count += 1
+            elif integ_edi[count][2] < integ_pes[count][2]:
+                integ_edi.pop(count)
+            elif integ_edi[count][2] > integ_pes[count][2]:
+                integ_pes.pop(count)
+        
+        # it means the last one of one of the lists it isnt in the other one
+        while len(integ_edi) != len(integ_pes):
+            if  len(integ_edi) < len(integ_pes):
+                integ_pes.pop()
+            else:
+                integ_edi.pop()
+
+        return integ_edi, integ_pes
+
+                 

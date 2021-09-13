@@ -8,7 +8,7 @@ def init_ui(self):
     self.setWindowTitle(self.title)
     self.setGeometry(self.left, self.top, self.width, self.height)
 
-    self.statusBar().showMessage('Ready')
+    self.statusBar().showMessage('')
 
     widget = QWidget(self)
     self.setCentralWidget(widget)
@@ -49,21 +49,16 @@ def init_ui(self):
     hlay_first2.addWidget(self.lable_actual_big_sigma1)
     hlay_first2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    # Button corresponding to first graph
-    pybutton_1 = QPushButton('Calcular', self)
-    aux_layer = QHBoxLayout()
-    aux_layer.addWidget(pybutton_1)
-    aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+
     first_super_vlay2 = QVBoxLayout()
 
     # Checkbox
     self.check_box_smooth_1 = QCheckBox("Mostrar curva de suavizado.")
-    self.check_peak_method = QCheckBox("Utilizar metodo antiguo minimos locales.")
+    self.check_peak_method = QCheckBox("Utilizar metodo una curva minimos locales.")
 
     first_super_vlay2.addLayout(hlay_first2)
     first_super_vlay2.addWidget(self.check_box_smooth_1)
     first_super_vlay2.addWidget(self.check_peak_method)
-    first_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(first_super_vlay2)
 
     # Add plot 1 to layout
@@ -104,33 +99,40 @@ def init_ui(self):
     hlay_second2.addWidget(self.label_actual_big_sigma2)
     hlay_second2.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
-    # Button corresponding to second graph
-    pybutton_2 = QPushButton('Calcular', self)
-    aux_layer = QHBoxLayout()
-    aux_layer.addWidget(pybutton_2)
-    aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
+   
+    
     second_super_vlay2 = QVBoxLayout()
 
     self.check_box_smooth_2 = QCheckBox("Mostrar curvas de suavizado.")
 
     second_super_vlay2.addLayout(hlay_second2)
     second_super_vlay2.addWidget(self.check_box_smooth_2)
-    second_super_vlay2.addLayout(aux_layer)
     vlay.addLayout(second_super_vlay2)
 
     # Add plot 2 to layout
     vlay.addWidget(self.plot_pes)
 
+     # Button to calculate integrals
+    calculate_button = QPushButton('Calcular', self)
+    calculate_button.setStyleSheet(
+    '''background-color : #008CBA;
+    color: white''')
+    calculate_button.resize(150, 50)
+
     export_button = QPushButton('Exportar datos', self)
+    export_button.setStyleSheet(
+    '''background-color : #4CAF50;
+    color: white''')
+
     aux_layer = QHBoxLayout()
+    aux_layer.addWidget(calculate_button)
     aux_layer.addWidget(export_button)
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 
     vlay.addLayout(aux_layer)
 
     # Buttons conections
-    pybutton_1.clicked.connect(self.edi_button_clicked)
-    pybutton_2.clicked.connect(self.pes_button_clicked)
+    calculate_button.clicked.connect(self.button_calculate_clicked)
     export_button.clicked.connect(self.export_data)
-    self.check_box_smooth_1.stateChanged.connect(self.edi_button_clicked)
-    self.check_box_smooth_2.stateChanged.connect(self.pes_button_clicked)
+    self.check_box_smooth_1.stateChanged.connect(self.button_calculate_clicked)
+    self.check_box_smooth_2.stateChanged.connect(self.button_calculate_clicked)

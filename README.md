@@ -14,8 +14,19 @@ PyQt5
 openpyxl
 xlrd
 matplotlib
- 
-# Usage
+
+Excecute main.py
+# Info
+The small and big smoothing parameter can´t be the same
+
+#Integration
+The integration is calculated like:
+in 1 second we have 100 samples, so to obtain the area 
+[picture]
+We rest the top square to the sample and the diference 
+is calculated like  
+(max_val*len_cycle - sum(data[start_cycle:end_cycle]))/100
+
 ### Input
 Input data must consist of an excel file with a worksheet with the name: **Resumen para análisis**, in which the two first columns contain the synchronized (same length) EAdi and Pes data, in that order. Data values are read starting from the second row.
 ### Interface usage
@@ -34,3 +45,4 @@ You can use de *Exportar datos* button to generate output. The output consists o
 * _t_start_edi -> 75%_: Time elapsed from _start_edi_ to _point_75%_.
 * _start_edi -> peak_edi_:
 * _start_edi -> end_edi_:
+
