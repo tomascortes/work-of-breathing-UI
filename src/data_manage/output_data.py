@@ -18,17 +18,17 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
 
     # Write colum names
     colum_names = [
-        "n_cycle",
-        "integral_value_pes",
-        "integral_value_edi",
-        "start_pes ",
-        "start_edi ",
-        "point_75% ",
-        "t_start_pes->75%",
-        "t_start_pes-> start_edi",
-        "t_start_edi -> 75%",
-        "start_edi -> peak_edi",
-        "start_edi -> end_edi",
+        "n cycle",
+        "integral value pes",
+        "integral value edi",
+        "start pes ",
+        "start edi ",
+        "point 75% ",
+        "t start pes->75%",
+        "t start pes-> start edi",
+        "t start edi -> 75%",
+        "t start edi -> peak edi",
+        "t start edi -> end edi",
         "edi Amplitude",
         "pes Amplitude"
     ]
