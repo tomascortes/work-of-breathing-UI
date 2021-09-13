@@ -41,7 +41,19 @@ class Analiser(QMainWindow):
         init_ui(self)
         self.showMaximized()
 
-    def edi_button_clicked(self):
+    def button_calculate_clicked(self):
+        self.edi_input_update()
+        self.pes_input_update()
+
+        integ_edi, integ_pes = self.integ.coordinated_integrals()
+        self.integ_results_edi = integ_edi
+        self.integ_results_pes = integ_pes
+        
+        self.edi_ploting()
+        self.pes_ploting()
+
+
+    def edi_input_update(self):
         if self.big_sigma_input1.text() != "":
             try:
                 self.integ.big_sigma_edi = float(self.big_sigma_input1.text())
@@ -61,6 +73,7 @@ class Analiser(QMainWindow):
         if self.integ.small_sigma_edi == self.integ.big_sigma_edi:
             self.integ.big_sigma_edi += 3
 
+    def edi_ploting(self):
         # Values getted
         if self.check_peak_method.isChecked():
             self.integ.old_edi_method = True
@@ -76,8 +89,7 @@ class Analiser(QMainWindow):
                 small_sigma=self.integ.small_sigma_edi)
             b_smooth, s_smooth = - b_smooth, - s_smooth
 
-        self.integ_results_edi = self.integ.integration_edi()
-
+            
         # Ploting
         self.plot_edi.canvas.clean()
         if self.check_box_smooth_1.isChecked():
@@ -90,8 +102,7 @@ class Analiser(QMainWindow):
         self.plot_edi.canvas.ax.set_title('Edi Signal')
         self.plot_edi.canvas.draw()
 
-    def pes_button_clicked(self):
-
+    def pes_input_update(self):
         if self.big_sigma_input2.text() != "":
             try:
                 self.integ.big_sigma_pes = float(self.big_sigma_input2.text())
@@ -111,12 +122,13 @@ class Analiser(QMainWindow):
 
         if self.integ.small_sigma_pes == self.integ.big_sigma_pes:
             self.integ.big_sigma_pes += 3
+    
+    def pes_ploting(self):
         # values getted
         peaks, big_smoothing, small_smoothing = get_pes_peaks(
             self.data_pes,
             big_sigma=self.integ.big_sigma_pes,
             small_sigma=self.integ.small_sigma_pes)
-        self.integ_results_pes = self.integ.integration_pes()
 
         # Ploting
         self.plot_pes.canvas.clean()
@@ -135,14 +147,18 @@ class Analiser(QMainWindow):
         peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
                                                big_sigma=self.integ.big_sigma_edi,
                                                small_sigma=self.integ.small_sigma_edi)
-        self.integ_results_pes = self.integ.integration_pes()
-        self.integ_results_edi = self.integ.integration_edi()
+        integ_edi, integ_pes = self.integ.coordinated_integrals()
+        self.integ_results_edi = integ_edi
+        self.integ_results_pes = integ_pes
+
         create_excel(
             self.integ_results_pes,
             self.integ_results_edi,
             peaks,
             antipeaks,
             f_name=self.file_name)
+        self.statusBar().showMessage(f'Archivo {self.file_name} exportado')
+        
 
 
 class WidgetPlot(QWidget):
@@ -155,7 +171,6 @@ class WidgetPlot(QWidget):
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.layout().addWidget(self.toolbar)
         self.layout().addWidget(self.canvas)
-        print(args)
 
 
 class PlotCanvas(FigureCanvas):

@@ -19,6 +19,7 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
     colum_names = [
         "n_cycle",
         "integral_value_pes",
+        "integral_value_edi",
         "start_pes ",
         "start_edi ",
         "point_75% ",
@@ -27,18 +28,16 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         "t_start_edi -> 75%",
         "start_edi -> peak_edi",
         "start_edi -> end_edi",
-        "",
-        "n_cycle_edi",
-        "integral_value_edi",
         "edi amplitude",
         "pes Amplitude"
     ]
     ws.append(colum_names)
 
     # Write data
-    for i in range(len(integ_data_edi)):
-        start_pes = integ_data_edi[i][1]
-        t_75 = integ_data_edi[i][2]
+    for cycle in range(len(integ_data_edi)):
+        
+        start_pes = integ_data_edi[cycle][1]
+        t_75 = integ_data_edi[cycle][2]
 
         def abs_difference(list_value): return abs(list_value - start_pes)
         start_edi = min(anti_peaks_edi, key=abs_difference)
@@ -48,15 +47,16 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
         index_peak_edi = next_edi_peak(peaks_edi, start_pes)
         peak_edi = peaks_edi[index_peak_edi]
 
-        if len(anti_peaks_edi) > i + 1:
+        if len(anti_peaks_edi) > cycle + 1:
             minus_a = anti_peaks_edi[index_s_edi + 1] - start_edi
             start_to_end_edi = (  minus_a)/100
         else:
             start_to_end_edi = "ultimo peak"
 
         ap_aux = [
-            i,  # Number of cycle
-            integ_data_pes[i][0],  # value integ pes
+            cycle,  # Number of cycle
+            integ_data_pes[cycle][0],  # value integ pes
+            integ_data_edi[cycle][0], # value integ edi
             start_pes,  # start pes
             start_edi,  # start edi
             t_75,  # end pes and 75%
@@ -65,11 +65,8 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
             (t_75 - start_edi)/100,  # margin edi to 75%
             (peak_edi - start_edi)/100,  # margin edi to peak
             start_to_end_edi,  # margin edi complete
-            "",
-            i,#index of edi values
-            integ_data_edi[i][0], # value integ edi
-            integ_data_edi[i][3], # Amplitude edi
-            integ_data_pes[i][3], # Amplitude pes
+            integ_data_edi[cycle][3], # Amplitude edi
+            integ_data_pes[cycle][3], # Amplitude pes
         ]
 
         ws.append(ap_aux)
@@ -83,7 +80,7 @@ def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_na
     # expand width form columns
     for col in ws.columns:
         column = col[0].column_letter   # Get the column name
-        ws.column_dimensions[column].width = 18
+        ws.column_dimensions[column].width = 20
     # Save excel file
     wb.save(output_dir_path + "/" + file_name)
 
