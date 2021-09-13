@@ -15,8 +15,8 @@ As shown in the user interface:
 [picture]
  
 # Installation
-You need [Python](https://www.python.org/) installed.
- 
+You need [Python](https://www.python.org/) installed. Its important to check the box "Add Python to PATH"
+ ![instalation example](./src/instalation.jpg?raw=true)
 To easily set up the necessary python libraries to run the software for the first time on your computer, you can execute (double click) the _package_installer.py_ file. This will automatically install all [dependencies](#dependencies).
 # Usage
 ### Input
