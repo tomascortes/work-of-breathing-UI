@@ -34,7 +34,7 @@ You can now press _Calcular_ to compute and visualize the points of interest bas
 ### Output
 You can use de *Exportar datos* button to generate output. The output consists of an excel file located at _/calculated_data_ folder, which will be automatically created in the same location as the executable file. The output file can be identified by the input file's name and a timestamp corresponding to it's time of creation. This excel file contains a worksheet with the name "results'', in which there are 10 columns:
 
-* 
+* Notation
     * Datapoint 0 corresponds to the first datapoint of the input signals, datapoint 1 corresponds to the second, and so forth, there are 100 Datapoints in one second)
     * When output start with _t_ like _t_start_pes->75%_ it means that the value in in seconds. Under the assumption that the signal frequency is 100 data points per second).
 
@@ -53,8 +53,8 @@ You can use de *Exportar datos* button to generate output. The output consists o
 * _pes Amplitude_: Amplitude of the cycle in the pes curve
 
 ## dependencies
-PyQt5
-openpyxl
-matplotlib
-scipy
-Excecute main.py
+* PyQt5
+* openpyxl
+* matplotlib
+* scipy
+* Excecute main.py
