@@ -124,8 +124,12 @@ def init_ui(self):
     '''background-color : #4CAF50;
     color: white''')
 
+    # Checkbox integration method
+    self.check_box_integration_method = QCheckBox("Calcular datos sin edi.")
+
     aux_layer = QHBoxLayout()
     aux_layer.addWidget(calculate_button)
+    aux_layer.addWidget(self.check_box_integration_method)
     aux_layer.addWidget(export_button)
     aux_layer.addItem(QSpacerItem(1000, 10, QSizePolicy.Expanding))
 

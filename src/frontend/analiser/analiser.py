@@ -40,15 +40,23 @@ class Analiser(QMainWindow):
         self.showMaximized()
 
     def button_calculate_clicked(self):
+
         self.edi_input_update()
         self.pes_input_update()
 
-        integ_edi, integ_pes = self.integ.coordinated_integrals()
-        self.integ_results_edi = integ_edi
-        self.integ_results_pes = integ_pes
+        if not self.check_box_integration_method.isChecked():
+            integ_edi, integ_pes = self.integ.coordinated_integrals()
+            self.integ_results_edi = integ_edi
+            self.integ_results_pes = integ_pes
 
-        self.edi_ploting()
-        self.pes_ploting()
+            self.edi_ploting()
+            self.pes_ploting()
+        else:
+            integ_pes = self.integ.integration_pes_without_edi()
+            self.integ_results_pes = integ_pes
+            print(self.integ_results_pes)
+            self.pes_ploting()
+
 
     def edi_input_update(self):
         if self.big_sigma_input1.text() != "":
@@ -133,7 +141,9 @@ class Analiser(QMainWindow):
                 big_smoothing, small_smoothing)
         self.plot_pes.canvas.plot_raw_data()
         self.plot_pes.canvas.pes_peaks_update(peaks)
-        self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
+        if not self.check_box_integration_method.isChecked():
+            self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
+
 
         self.plot_pes.canvas.plot_integration(self.integ_results_pes)
         self.plot_pes.canvas.ax.set_title('Pes Signal')

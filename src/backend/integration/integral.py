@@ -182,4 +182,61 @@ class Integration:
 
         return integ_edi, integ_pes
 
+    def integration_pes_without_edi(self) -> list:
+        '''
+        Return list of lists where each list
+        contains
+        [integral_value on pes, start_integral, end_integral, amplitud of cycle]
+        '''
+        integral_values = []
+        dx = 1/100
+
+        index_peaks_pes, _, _ = get_pes_peaks(self.data_pes,
+                                              big_sigma=self.big_sigma_pes,
+                                              small_sigma=self.small_sigma_pes)
+
+
+        for start_pointer in range(len(index_peaks_pes) - 1):
+            max_value = self.data_pes[index_peaks_pes[start_pointer]]
+            s = 0
+            end_pointer = self.next_end_edi(
+                index_peaks_pes[start_pointer] + 10, max_value, self.data_pes)
+            if not end_pointer or end_pointer < index_peaks_pes[start_pointer]:
+                continue
+            print(index_peaks_pes[start_pointer], end_pointer)
+            min_value = min(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+
+            len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+            #Inferior Area
+            s = sum(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+            #superior Area minus the inferior area
+            s = max_value*len_cicle - s
+            #giving result in seconds
+            s *= dx
+            amplitude = max_value - min_value
+            if MAX_INTEGRAL_VALUE < s:
+                continue
+            # store the values with the corresponding ones used to calculate them
+            integral_values.append(
+                [s, index_peaks_pes[start_pointer], end_pointer, amplitude])
+
+        # If there are repeated ends of integral, we keep just the last one
+        count = 0
+        while count < len(integral_values) -1:
+            if integral_values[count][2] == integral_values[count + 1][2]:
+                integral_values.pop(count)
+            else:
+                count += 1
+
+        return integral_values
+    
+    def next_end_edi(self, start, max_value, data_edi):
+        data_edi = data_edi[start:]
+        for index in range(len(data_edi)):
+            val = data_edi[index]
+            if val>=max_value:
+                return index
+        return len(data_edi) - 1
+
+
                  
