@@ -89,3 +89,46 @@ def next_edi_peak(peaks_edi, start_edi):
     for i in range(len(peaks_edi)):
         if peaks_edi[i] > start_edi:
             return i
+
+def create_excel_without_edi( integ_data_pes, f_name=""):
+    """Create excel just for the pes data."""
+
+    # Create workbook
+    wb = Workbook()
+    ws = wb.get_sheet_by_name('Sheet')
+    ws.title = "results"
+
+    # Write colum names
+    colum_names = [
+        "n cycle",
+        "integral value pes",
+        "start pes ",
+        "end pes ",
+        "pes Amplitude"
+    ]
+    ws.append(colum_names)
+
+    # Write data
+    for cycle in range(len(integ_data_pes)):
+        ap_aux = [
+            cycle,  # Number of cycle
+            integ_data_pes[cycle][0],  # value integ pes
+            integ_data_pes[cycle][1],  # start pes
+            integ_data_pes[cycle][2],  # end pes
+            integ_data_pes[cycle][3],  # Amplitude pes
+        ]
+
+        ws.append(ap_aux)
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    f_name = os.path.splitext(f_name)[0]
+    file_name = f_name + "_" + timestamp + ".xlsx"
+    output_dir_path = "calculated_data"
+    # Create output folder if it doesnt exists
+    Path(output_dir_path).mkdir(parents=True, exist_ok=True)
+    # expand width form columns
+    for col in ws.columns:
+        column = col[0].column_letter   # Get the column name
+        ws.column_dimensions[column].width = 20
+    # Save excel file
+    wb.save(output_dir_path + "/" + file_name)

@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks, get_edi_peaks_old
 from src.backend.integration.integral import Integration
-from src.data_manage.output_data import create_excel
+from src.data_manage.output_data import create_excel, create_excel_without_edi
 from src.frontend.analiser.layout import init_ui
 
 
@@ -54,7 +54,6 @@ class Analiser(QMainWindow):
         else:
             integ_pes = self.integ.integration_pes_without_edi()
             self.integ_results_pes = integ_pes
-            print(self.integ_results_pes)
             self.pes_ploting()
 
 
@@ -152,19 +151,24 @@ class Analiser(QMainWindow):
     def export_data(self):
         self.statusBar().showMessage("Exportando")
 
-        peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
-                                               big_sigma=self.integ.big_sigma_edi,
-                                               small_sigma=self.integ.small_sigma_edi)
-        integ_edi, integ_pes = self.integ.coordinated_integrals()
-        self.integ_results_edi = integ_edi
-        self.integ_results_pes = integ_pes
+        if not self.check_box_integration_method.isChecked():
+            peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
+                                                big_sigma=self.integ.big_sigma_edi,
+                                                small_sigma=self.integ.small_sigma_edi)
+            integ_edi, integ_pes = self.integ.coordinated_integrals()
+            self.integ_results_edi = integ_edi
+            self.integ_results_pes = integ_pes
 
-        create_excel(
-            self.integ_results_pes,
-            self.integ_results_edi,
-            peaks,
-            antipeaks,
-            f_name=self.file_name)
+            create_excel(
+                self.integ_results_pes,
+                self.integ_results_edi,
+                peaks,
+                antipeaks,
+                f_name=self.file_name)
+        else:
+            integ_pes = self.integ.integration_pes_without_edi()
+            self.integ_results_pes = integ_pes
+            create_excel_without_edi(integ_pes)
         self.statusBar().showMessage(f'Archivo {self.file_name} exportado')
 
 

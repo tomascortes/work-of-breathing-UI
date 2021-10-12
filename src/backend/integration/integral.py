@@ -1,5 +1,5 @@
 from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks,get_edi_peaks_old
-from src.backend.params import MAX_INTEGRAL_VALUE
+from src.backend.params import MAX_INTEGRAL_VALUE, MAX_INTEGRAL_VALUE_PES
 
 class Integration:
     def __init__(self, data_edi, data_pes):
@@ -200,10 +200,11 @@ class Integration:
             max_value = self.data_pes[index_peaks_pes[start_pointer]]
             s = 0
             end_pointer = self.next_end_edi(
-                index_peaks_pes[start_pointer] + 10, max_value, self.data_pes)
+                index_peaks_pes[start_pointer] + 20, 
+                max_value,
+                index_peaks_pes[start_pointer +1])
             if not end_pointer or end_pointer < index_peaks_pes[start_pointer]:
                 continue
-            print(index_peaks_pes[start_pointer], end_pointer)
             min_value = min(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
 
             len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
@@ -214,7 +215,7 @@ class Integration:
             #giving result in seconds
             s *= dx
             amplitude = max_value - min_value
-            if MAX_INTEGRAL_VALUE < s:
+            if MAX_INTEGRAL_VALUE_PES < s:
                 continue
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
@@ -230,13 +231,14 @@ class Integration:
 
         return integral_values
     
-    def next_end_edi(self, start, max_value, data_edi):
-        data_edi = data_edi[start:]
-        for index in range(len(data_edi)):
-            val = data_edi[index]
-            if val>=max_value:
+    def next_end_edi(self, start, max_value, next_cicle):
+
+        for index in range(len(self.data_pes)):
+            val = self.data_pes[index]
+            if val >= max_value and index > start:
                 return index
-        return len(data_edi) - 1
+            if next_cicle < index:
+                return next_cicle
 
 
                  
