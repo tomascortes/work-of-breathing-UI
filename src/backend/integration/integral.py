@@ -173,7 +173,8 @@ class Integration:
         integ_edi = self.integration_edi()
         integ_pes = self.integration_pes()
         count = 0
-        while count < len(integ_edi) - 1 and count < len(integ_edi) -1 :
+
+        while count < len(integ_edi) - 1 and count < len(integ_pes) -1 :
             if integ_edi[count][2] == integ_pes[count][2]:
                 count += 1
             elif integ_edi[count][2] < integ_pes[count][2]:
