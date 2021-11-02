@@ -3,7 +3,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks, get_edi_peaks_old
+from src.backend.peak_finder.signal_processing import get_edi_peaks_old, SignalProcessor
 from src.backend.integration.integral import Integration
 from src.data_manage.output_data import create_excel, create_excel_without_edi
 from src.frontend.analiser.layout import init_ui
@@ -23,7 +23,9 @@ class Analiser(QMainWindow):
         # Utility variables
         self.data_edi = data_edi
         self.data_pes = data_pes
-        self.integ = Integration(data_edi, data_pes)
+        self.sp_edi = SignalProcessor(data_edi)
+        self.sp_pes = SignalProcessor(data_pes)
+        self.integ = Integration(data_edi, data_pes, self.sp_edi, self.sp_pes)
         self.integ_results_pes = None
         self.file_name = f_name
 
@@ -87,11 +89,15 @@ class Analiser(QMainWindow):
             s_smooth = []
         else:
             self.integ.old_edi_method = False
-            peaks, antipeaks, b_smooth, s_smooth = get_edi_peaks(
-                data=self.data_edi,
+
+            self.sp_edi.update_peaks(
                 big_sigma=self.integ.big_sigma_edi,
                 small_sigma=self.integ.small_sigma_edi)
-            b_smooth, s_smooth = - b_smooth, - s_smooth
+
+            peaks = self.sp_edi.get_straight_signal_peaks()
+            antipeaks = self.sp_edi.right_antipeaks
+            b_smooth = self.sp_edi.big_smoothed_signal
+            s_smooth = self.sp_edi.small_smoothed_signal
 
         # Ploting
         self.plot_edi.canvas.clean()
@@ -127,11 +133,14 @@ class Analiser(QMainWindow):
             self.integ.big_sigma_pes += 3
 
     def pes_ploting(self):
-        # values getted
-        peaks, big_smoothing, small_smoothing = get_pes_peaks(
-            self.data_pes,
+        self.sp_pes.update_peaks(
             big_sigma=self.integ.big_sigma_pes,
             small_sigma=self.integ.small_sigma_pes)
+
+        # values getted
+        peaks = self.sp_pes.right_peaks
+        big_smoothing = self.sp_pes.big_smoothed_signal
+        small_smoothing = self.sp_pes.small_smoothed_signal
 
         # Ploting
         self.plot_pes.canvas.clean()
@@ -152,9 +161,13 @@ class Analiser(QMainWindow):
         self.statusBar().showMessage("Exportando")
 
         if not self.check_box_integration_method.isChecked():
-            peaks, antipeaks, _, _ = get_edi_peaks(self.data_edi,
-                                                big_sigma=self.integ.big_sigma_edi,
-                                                small_sigma=self.integ.small_sigma_edi)
+
+            self.sp_edi.update_peaks(
+                big_sigma=self.integ.big_sigma_edi,
+                small_sigma=self.integ.small_sigma_edi)
+
+            peaks = self.sp_edi.get_straight_signal_peaks()
+            antipeaks = self.sp_edi.right_antipeaks
             integ_edi, integ_pes = self.integ.coordinated_integrals()
             self.integ_results_edi = integ_edi
             self.integ_results_pes = integ_pes

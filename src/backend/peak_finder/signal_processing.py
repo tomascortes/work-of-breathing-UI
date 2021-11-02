@@ -159,21 +159,22 @@ class SignalProcessor:
         dist:                   minimum distance between straight peaks or antipeaks.
         prom:                   minimum prominence for straigt_peaks(vertical distance between the peak and its lowest contour line) of peaks or antipeaks.
     """
-    def __init__(self, data, smoothing_sigma=2.1, big_sigma=300, small_sigma=25, dist_from_pl=0, dist=75,  prom=1):
+    def __init__(self, data):
         # self.signal corresponds to an array of the signal values
         self.signal = np.array(data)
+
+    def update_peaks(self, smoothing_sigma=2.1, big_sigma=300, small_sigma=25, dist_from_pl=0, dist=75,  prom=1):
         # smoothed signal with smoothing_sigma to ignore noise-derived peaks
-        self.smoothed_signal = self.get_smoothed_signal(self.signal, smoothing_sigma)
+        self.smoothed_signal = self.get_smoothed_signal(smoothing_sigma)
         # signal smoothed with big_sigma
-        self.big_smoothed_signal = self.get_smoothed_signal(self.signal, big_smoothing_sigma)
+        self.big_smoothed_signal = self.get_smoothed_signal(big_sigma)
         # signal smoothed with small_sigma
-        self.small_smoothed_signal = self.get_smoothed_signal(self.signal, small_smoothing_sigma)
+        self.small_smoothed_signal = self.get_smoothed_signal(small_sigma)
         
         # Values for calculating straight_signal_peaks
         self.dist_from_pl = dist_from_pl
         self.dist = dist
         self.prom = prom
-
 
         # ALL positions for positive peaks (local maxima)
         self.all_peaks, _ = find_peaks(self.smoothed_signal, height=(
@@ -208,11 +209,11 @@ class SignalProcessor:
         if not antipeak:
             # positions for positive peaks (local maxima)
             peaks, _ = find_peaks(self.smoothed_signal, height=(
-                self.very_smoothed_sgnl + self.dist_from_pl, np.amax(self.signal)), distance=self.dist, prominence=self.prom)
+                self.big_smoothed_signal + self.dist_from_pl, np.amax(self.signal)), distance=self.dist, prominence=self.prom)
         else:
             # positions for negative peaks (local minima)
             peaks, _ = find_peaks(-self.smoothed_signal, height=(
-                -self.very_smoothed_sgnl + self.dist_from_pl, np.amax(-self.signal)), distance=self.dist, prominence=self.prom)
+                -self.big_smoothed_signal + self.dist_from_pl, np.amax(-self.signal)), distance=self.dist, prominence=self.prom)
 
         return peaks
 
@@ -246,11 +247,11 @@ class SignalProcessor:
         else:
             all_peaks = self.all_peaks
         
-        sc_len = len(inflection_points)
         peaks = []
         cnt = 0
         if side == "right":
             inflection_points = self.ip_neg
+            sc_len = len(inflection_points)
             for i, peak_xpos in enumerate(all_peaks):
                 if peak_xpos >= inflection_points[cnt]:
                     peaks.append(all_peaks[i-1])
@@ -259,6 +260,7 @@ class SignalProcessor:
                         break
         elif side == "left":
             inflection_points = self.ip_pos
+            sc_len = len(inflection_points)
             all_peaks = all_peaks[::-1]
             inflection_points = inflection_points[::-1]
             for i, peak_xpos in enumerate(all_peaks):
