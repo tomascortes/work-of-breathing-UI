@@ -1,8 +1,8 @@
-from src.backend.peak_finder.signal_processing import get_edi_peaks, get_pes_peaks,get_edi_peaks_old
+from src.backend.peak_finder.signal_processing import get_edi_peaks_old
 from src.backend.params import MAX_INTEGRAL_VALUE, MAX_INTEGRAL_VALUE_PES
 
 class Integration:
-    def __init__(self, data_edi, data_pes):
+    def __init__(self, data_edi, data_pes, signal_processor_edi, signal_processor_pes):
 
         self.data_edi = data_edi
         self.data_pes = data_pes
@@ -12,6 +12,8 @@ class Integration:
         self.small_sigma_pes = 25
         self.old_edi_method = False
 
+        self.sp_edi = signal_processor_edi
+        self.sp_pes = signal_processor_pes
 
     def points_75_percent(self) -> list:
         '''
@@ -25,10 +27,12 @@ class Integration:
                 self.data_edi, 
                 big_sigma=self.big_sigma_pes)
         else:
-            peaks, antipeaks, _, _= get_edi_peaks(
-                self.data_edi, 
-                big_sigma=self.big_sigma_pes,
-                small_sigma = self.small_sigma_pes)
+            self.sp_edi.update_peaks(
+                big_sigma=self.big_sigma_edi,
+                small_sigma = self.small_sigma_edi)
+            peaks = self.sp_edi.get_straight_signal_peaks()
+            antipeaks = self.sp_edi.right_antipeaks
+
         peak_index = 0
 
         # the start of the cicle is antipeak
@@ -56,9 +60,12 @@ class Integration:
         integral_values = []
         dx = 1/100
 
-        index_peaks_pes, _, _ = get_pes_peaks(self.data_pes,
-                                              big_sigma=self.big_sigma_pes,
-                                              small_sigma=self.small_sigma_pes)
+        self.sp_pes.update_peaks(
+            big_sigma=self.big_sigma_pes,
+            small_sigma=self.small_sigma_pes)
+
+        index_peaks_pes = self.sp_pes.right_peaks
+
         index_75 = self.points_75_percent()
 
 
@@ -72,6 +79,8 @@ class Integration:
             min_value = min(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            
+            
             #Inferior Area
             s = sum(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
             #superior Area minus the inferior area
@@ -79,6 +88,7 @@ class Integration:
             #giving result in seconds
             s *= dx
             amplitude = max_value - min_value
+
             if MAX_INTEGRAL_VALUE < s:
                 continue
             # store the values with the corresponding ones used to calculate them
@@ -109,11 +119,11 @@ class Integration:
                 self.data_edi, 
                 big_sigma=self.big_sigma_edi)
         else:
-            _, index_anti_peaks, _, _= get_edi_peaks(
-                self.data_edi, 
+            self.sp_edi.update_peaks(
                 big_sigma=self.big_sigma_edi,
                 small_sigma = self.small_sigma_edi)
 
+            index_anti_peaks = self.sp_edi.right_antipeaks
 
         index_75 = self.points_75_percent()
 
@@ -155,7 +165,8 @@ class Integration:
         '''
         Recives int used as pointer start_pointer, the list of index_peaks and
         teh list of index_75 and return the pointer corresponding to the next 
-        index_75 value'''
+        index_75 value
+        '''
 
         for i in range(len(index_75)):
             if index_75[i] > index_peaks[start_pointer]:
@@ -165,7 +176,8 @@ class Integration:
         integ_edi = self.integration_edi()
         integ_pes = self.integration_pes()
         count = 0
-        while count < len(integ_edi) - 1 and count < len(integ_edi) -1 :
+
+        while count < len(integ_edi) - 1 and count < len(integ_pes) -1 :
             if integ_edi[count][2] == integ_pes[count][2]:
                 count += 1
             elif integ_edi[count][2] < integ_pes[count][2]:
@@ -191,10 +203,11 @@ class Integration:
         integral_values = []
         dx = 1/100
 
-        index_peaks_pes, _, _ = get_pes_peaks(self.data_pes,
-                                              big_sigma=self.big_sigma_pes,
-                                              small_sigma=self.small_sigma_pes)
+        self.sp_pes.update_peaks(
+            big_sigma=self.big_sigma_pes,
+            small_sigma = self.small_sigma_pes)
 
+        index_peaks_pes = self.sp_pes.right_peaks
 
         for start_pointer in range(len(index_peaks_pes) - 1):
             max_value = self.data_pes[index_peaks_pes[start_pointer]]
