@@ -184,9 +184,13 @@ class SignalProcessor:
 
         self.ip_pos, self.ip_neg = self.get_inflection_points()
 
+        # array of positions of first local maxima of each mount of the signal.
         self.left_peaks = self.get_sided_peaks(side="left")
+        # array of positions of last local maxima of each mount of the signal.
         self.right_peaks = self.get_sided_peaks(side="right")
+        # array of positions of first local minima of each valley of the signal.
         self.left_antipeaks = self.get_sided_peaks(side = "left", antipeak = True)
+        # array of positions of last local minima of each valley of the signal.
         self.right_antipeaks = self.get_sided_peaks(side = "right", antipeak = True)
 
     def get_smoothed_signal(self, smoothing_sigma) -> list:
@@ -266,7 +270,6 @@ class SignalProcessor:
             peaks = peaks[::-1]
         
         return peaks
-
 
 
 if __name__ == '__main__':
