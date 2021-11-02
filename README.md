@@ -12,11 +12,14 @@ To easily set up the necessary python libraries to run the software for the firs
 # Usage
 ### Input
 Input data must consist of an excel file with a worksheet named: **Resumen para análisis**, in which the first two columns contain the synchronized (same length) EAdi and Pes data, in that order. Data values are read starting from the second row. All calculations are carried out under the assumption that the frequency of the input signals is **100 data points per second**.
+
 ### Interface usage
 After executing main.py, the user interface will pop up. Choose the input file with *Abrir archivo* button and then press *Continuar*. If everything worked right you should see both signals (Edi and Pes) shown in interactive graphs.
+ ![first view](./src/images/app_not_zoomed.JPG)
  
 You can now press _Calcular_ to compute and visualize the points of interest based on the smoothing values *Suavizado pequeño* and *Suavizado grande* (values shown at the right of input text boxes are the default values) You can also visualize the smoothed curves used in inflection point estimation by checking off the *Mostrar curva de suavizado* checkbox.
  
+ ![showing graph](./src/images/app.JPG)
 Note that *Suavizado pequeño* and *Suavizado grande* input values can not be equal or negative, otherwise the software will crash when trying to compute the inflection points.
 ### Output
 You can use de *Exportar datos* button to generate output. The output consists of an excel file located at _/calculated_data_ folder, which will be automatically created in the same location as the executable file. The output file can be identified by the input file's name and a timestamp corresponding to it's time of creation. This excel file contains a worksheet named "results'', in which there are 13 columns:
@@ -53,4 +56,4 @@ The PTP for each inspiration cycle is finally computed as the area over the Pes 
 CyclePTP = (PesData[startingPoint] * (endingPoint - startingPoint) - sum(PesData[startingPoint:endingPoint])) / 100
 ```
 
- 
+  ![showing graph](./src/images/app_with_curves.JPG)
