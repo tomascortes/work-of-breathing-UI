@@ -79,6 +79,8 @@ class Integration:
             min_value = min(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
 
             len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
+            
+            
             #Inferior Area
             s = sum(self.data_pes[index_peaks_pes[start_pointer]:index_75[end_pointer]])
             #superior Area minus the inferior area
@@ -86,6 +88,7 @@ class Integration:
             #giving result in seconds
             s *= dx
             amplitude = max_value - min_value
+
             if MAX_INTEGRAL_VALUE < s:
                 continue
             # store the values with the corresponding ones used to calculate them

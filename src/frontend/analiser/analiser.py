@@ -173,8 +173,8 @@ class Analiser(QMainWindow):
             self.integ_results_pes = integ_pes
 
             create_excel(
-                self.integ_results_pes,
                 self.integ_results_edi,
+                self.integ_results_pes,
                 peaks,
                 antipeaks,
                 f_name=self.file_name)
