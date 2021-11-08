@@ -176,6 +176,7 @@ class Integration:
         integ_edi = self.integration_edi()
         integ_pes = self.integration_pes()
         count = 0
+        
 
         while count < len(integ_edi) - 1 and count < len(integ_pes) -1 :
             if integ_edi[count][2] == integ_pes[count][2]:
@@ -208,21 +209,25 @@ class Integration:
             small_sigma = self.small_sigma_pes)
 
         index_peaks_pes = self.sp_pes.right_peaks
+        
 
-        for start_pointer in range(len(index_peaks_pes) - 1):
-            max_value = self.data_pes[index_peaks_pes[start_pointer]]
+
+        for start_cicle in range(len(index_peaks_pes) - 1):
+            max_value = self.data_pes[index_peaks_pes[start_cicle]]
             s = 0
-            end_pointer = self.next_end_edi(
-                index_peaks_pes[start_pointer] + 20, 
-                max_value,
-                index_peaks_pes[start_pointer +1])
-            if not end_pointer or end_pointer < index_peaks_pes[start_pointer]:
-                continue
-            min_value = min(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+            
+            start_pointer = index_peaks_pes[start_cicle]
+            end_pointer = self.next_25_point(
+                start_pointer, 
+                index_peaks_pes[start_cicle +1])
 
-            len_cicle = len(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+            if not end_pointer or end_pointer < start_pointer:
+                continue
+            min_value = min(self.data_pes[start_pointer:end_pointer])
+
+            len_cicle = len(self.data_pes[start_pointer:end_pointer])
             #Inferior Area
-            s = sum(self.data_pes[index_peaks_pes[start_pointer]:end_pointer])
+            s = sum(self.data_pes[start_pointer:end_pointer])
             #superior Area minus the inferior area
             s = max_value*len_cicle - s
             #giving result in seconds
@@ -232,7 +237,7 @@ class Integration:
                 continue
             # store the values with the corresponding ones used to calculate them
             integral_values.append(
-                [s, index_peaks_pes[start_pointer], end_pointer, amplitude])
+                [s, start_pointer, end_pointer, amplitude])
 
         # If there are repeated ends of integral, we keep just the last one
         count = 0
@@ -243,15 +248,21 @@ class Integration:
                 count += 1
 
         return integral_values
-    
-    def next_end_edi(self, start, max_value, next_cicle):
 
-        for index in range(len(self.data_pes)):
-            val = self.data_pes[index]
-            if val >= max_value and index > start:
-                return index
-            if next_cicle < index:
-                return next_cicle
+
+    def next_25_point(self, start_x_val,  next_cicle):
+        index_left_peaks_pes = self.sp_pes.left_peaks
+        index_antipeaks_pes = self.sp_pes.get_straight_signal_peaks(True)
+        next_left_p = self.next_betwen(start_x_val, next_cicle, index_left_peaks_pes)
+        next_left_antp = self.next_betwen(start_x_val, next_cicle, index_antipeaks_pes)
+        return round( 25 * (next_left_p - next_left_antp)/100 + next_left_antp)
+        
+    def next_betwen(self,start,end,list):
+        for index in range(len(list)):
+            if list[index] > start:
+                return list[index]
+            if end < list[index]:
+                return end
 
 
                  

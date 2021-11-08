@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 
-def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_name="") -> tuple:
+def create_excel(integ_data_edi, integ_data_pes, peaks_edi, anti_peaks_edi, f_name=""):
     """recives a list of lists with shape:
     [integral_value, start_integral, end_integral]
     and returns and creates an excel file with the data in the
