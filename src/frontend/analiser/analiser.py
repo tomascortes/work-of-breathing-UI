@@ -105,7 +105,7 @@ class Analiser(QMainWindow):
             self.plot_edi.canvas.plot_smoothed(b_smooth, s_smooth)
 
         self.plot_edi.canvas.plot_raw_data()
-        self.plot_edi.canvas.edi_peaks_update(peaks, antipeaks)
+        self.plot_edi.canvas.peaks_update(peaks, antipeaks)
         self.plot_edi.canvas.plot_75_points(self.integ.points_75_percent())
         self.plot_edi.canvas.plot_integration(self.integ_results_edi)
         self.plot_edi.canvas.ax.set_title('Edi Signal')
@@ -139,6 +139,7 @@ class Analiser(QMainWindow):
 
         # values getted
         peaks = self.sp_pes.right_peaks
+        antipeaks = self.sp_pes.get_straight_signal_peaks(True)
         big_smoothing = self.sp_pes.big_smoothed_signal
         small_smoothing = self.sp_pes.small_smoothed_signal
 
@@ -148,10 +149,14 @@ class Analiser(QMainWindow):
             self.plot_pes.canvas.plot_smoothed(
                 big_smoothing, small_smoothing)
         self.plot_pes.canvas.plot_raw_data()
-        self.plot_pes.canvas.pes_peaks_update(peaks)
+        self.plot_pes.canvas.peaks_update(peaks, antipeaks)
+        self.plot_pes.canvas.peaks_update(self.sp_pes.left_peaks, [])
         if not self.check_box_integration_method.isChecked():
             self.plot_pes.canvas.plot_75_points(self.integ.points_75_percent())
-
+        # else:
+            # self.plot_pes.canvas.plot_75_points(self.sp_pes.percentage_point_list(25,
+            #     antipeaks,
+            #     peaks))
 
         self.plot_pes.canvas.plot_integration(self.integ_results_pes)
         self.plot_pes.canvas.ax.set_title('Pes Signal')
@@ -225,7 +230,7 @@ class PlotCanvas(FigureCanvas):
     def plot_raw_data(self):
         self.ax.plot(self.data, 'r-', linewidth=0.5)
 
-    def edi_peaks_update(self, peaks, antipeaks):
+    def peaks_update(self, peaks, antipeaks):
         self.ax.plot(peaks, [self.data[x_peak] for x_peak in peaks], 'bo')
         self.ax.plot(antipeaks, [self.data[x_a_peak]
                      for x_a_peak in antipeaks], 'b+')
