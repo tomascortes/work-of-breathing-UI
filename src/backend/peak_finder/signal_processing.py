@@ -293,6 +293,15 @@ class SignalProcessor:
         
         return point_diff_list
 
+    def percentage_point_list(self, percentage, point_list1,  point_list2) -> list:
+        """
+        Function that recieves two lists of points and returns another list of the points located at "percentage" % between each
+            pair of points from pl1 and pl2. 
+        """
+        distance = self.distance_btw_points(point_list1, point_list2)
+        fraction = percentage / 100
+        return [x + y * fraction for x, y in zip(point_list1, distance)]
+
 if __name__ == '__main__':
     # positions for positive peaks (local maxima)
     path = ".../../data/01_ PVE 1_Importacion de datos filtrados_con graficos.xlsm"
